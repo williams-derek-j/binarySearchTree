@@ -90,29 +90,6 @@ export default class Tree {
         }
     }
 
-    findParent(node, prev = null) {
-        if (prev === null) {
-            prev = this.root
-        }
-
-        if (node !== prev.left && node !== prev.right) {
-            if (node.value < prev.value) {
-                prev = prev.left
-                this.findParent(node, prev)
-            } else {
-                prev = prev.right
-                this.findParent(node, prev)
-            }
-        } else {
-            if (node === prev.left) {
-                return prev
-            } else if (node === prev.right) {
-                return prev
-            }
-        }
-        return new Error("Node not found!")
-    }
-
     router(node, value) {
         if (value < node.value) {
             if (node.left) {
@@ -130,7 +107,7 @@ export default class Tree {
             // node.right = new Node(value)
         } else {
             return node
-            // return new Error("Duplicate value! Forest unchanged.")
+            // return new Error("Duplicate value! Tree unchanged.")
         }
     }
 
@@ -147,7 +124,7 @@ export default class Tree {
                     prev.right = node
                 }
             } else {
-                return new Error("Duplicate value! Forest unchanged.")
+                return new Error("Duplicate value! Tree unchanged.")
             }
         } else {
             this.root = node
@@ -155,8 +132,20 @@ export default class Tree {
     }
 
     remove(value) {
-        if (this.root.value === value) {
-            this.root = null
+        if (this.root.value === value) { // removing root
+            const node = this.root // root assigned to variable for readability
+
+            if (node.left) {
+                if (node.right) {
+                    const mostRight = this.findMostRight(node.left)
+                    mostRight.right = node.right
+                }
+                this.root = node.left
+            } else if (this.root.right) {
+                this.root = node.right
+            } else {
+                this.root = null
+            }
         } else {
             const node = this.router(this.root, value)
 
@@ -164,15 +153,77 @@ export default class Tree {
                 const parent = this.findParent(node)
 
                 if (node === parent.left) {
-                    parent.left = null
+                    // parent.left = null
+                    if (node.left) {
+                        if (node.right) {
+                            const mostRight = this.findMostRight(node.left)
+                            mostRight.right = node.right
+                        }
+                    }
+                    parent.left = node.left
                     // need logic to merge left + right children of removed child node and assign to parent.left
                 } else if (node === parent.right) {
-                    parent.right = null
+                    // parent.right = null
+                    if (node.left) {
+                        if (node.right) {
+                            const mostRight = this.findMostRight(node.left)
+                            mostRight.right = node.right
+                        }
+                    }
+                    parent.right = node.left
                     // need logic to merge left + right children of removed child and assign to parent.right
+                } else {
+                    console.log(node, parent.left, parent.right, parent)
+                    console.log('doh')
                 }
             } else {
-                return new Error("Value not found! Forest unchanged.")
+                return new Error("Value not found! Tree unchanged.")
             }
+        }
+    }
+
+    find(value, node = this.root) {
+        if (value < node.value) {
+            if (node.left) {
+                return this.find(value, node.left)
+            } else {
+                return new Error('Node not found!')
+            }
+        } else if (value > node.value) {
+            if (node.right) {
+                return this.find(value, node.right)
+            } else {
+                return new Error('Node not found!')
+            }
+        } else {
+            return node
+        }
+    }
+
+    findParent(node, prev = this.root) {
+        if (node !== prev.left && node !== prev.right) {
+            if (node.value < prev.value) {
+                prev = prev.left
+                return this.findParent(node, prev)
+            } else {
+                prev = prev.right
+                return this.findParent(node, prev)
+            }
+        } else {
+            if (node === prev.left) {
+                return prev
+            } else if (node === prev.right) {
+                return prev
+            }
+        }
+        return new Error("Node not found!")
+    }
+
+    findMostRight(node = this.root) {
+        if (node.right) {
+            return this.findMostRight(node.right)
+        } else {
+            return node
         }
     }
 
@@ -214,6 +265,19 @@ export default class Tree {
                 arr.push(...right)
             }
             return arr
+        }
+    }
+
+    prettyPrint(node, prefix = '', isLeft = true) {
+        if (node === null) {
+            return;
+        }
+        if (node.right !== null) {
+            this.prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+        }
+        console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.value}`);
+        if (node.left !== null) {
+            this.prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
         }
     }
 }
