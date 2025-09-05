@@ -19,7 +19,7 @@ export default class Tree {
             } else if (array[0] > parent.value) {
                 parent.right = new Node(array[0])
             } else { // same as parent, skip
-                // could return node up recursion chain here
+                // could return parent node up recursion chain here
             }
         } else if (array.length <= 2) {
             if (array[0] < parent.value && array[1] > parent.value) { // sorted already
@@ -35,7 +35,7 @@ export default class Tree {
                     if (array[1] !== parent.value) { // check for duplicate as fail condition
                         this.buildBranch([array[1]], parent.left) // both less than parent; parent.left.left
                     } else {
-                        // could return a node up the recursion chain here
+                        // could return a leaf node up the recursion chain here
                     }
                 } else if (array[0] > parent.value) { // both greater than parent
                     parent.right = new Node(array[0])
@@ -53,7 +53,7 @@ export default class Tree {
                     if (array[0] !== parent.value) { // check for duplicate as fail condition
                         this.buildBranch([array[0]], parent.left) // both less than parent; parent.left.left
                     } else {
-                        // could return a node up the recursion chain here
+                        // could return a leaf node up the recursion chain here
                     }
                 } else if (array[1] > parent.value) { // both greater than parent
                     parent.right = new Node(array[1])
@@ -74,9 +74,11 @@ export default class Tree {
                 parent.left = new Node(array[midpoint])
 
                 this.buildBranch(array.slice(0, midpoint), parent.left)
+                this.buildBranch(array.slice(midpoint + 1), parent.left)
             } else if (array[midpoint] > parent.value) {
                 parent.right = new Node(array[midpoint])
 
+                this.buildBranch(array.slice(0, midpoint), parent.right)
                 this.buildBranch(array.slice(midpoint + 1), parent.right)
             } else if (array[midpoint] === parent.value) {
                 let noMid = [...array.slice(0, midpoint)]
