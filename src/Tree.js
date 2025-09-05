@@ -90,24 +90,23 @@ export default class Tree {
         }
     }
 
-    router(node, value) {
+    router(value, node = this.root) {
         if (value < node.value) {
-            if (node.left) {
-                return this.router(node.left, value)
+            if (node.left) { // at bottom of tree?
+                return this.router(value, node.left) // not yet, recurse
             } else {
-                return node
+                return node // yes, return parent
             }
-            // node.left = new Node(value)
         } else if (value > node.value) {
-            if (node.right) {
-                return this.router(node.right, value)
+            if (node.right) { // at bottom of tree?
+                return this.router(value, node.right) // not yet, recurse
             } else {
-                return node
+                return node // yes, return parent
             }
-            // node.right = new Node(value)
-        } else {
-            return node
-            // return new Error("Duplicate value! Tree unchanged.")
+        } else if (value === node.value) { // node with value already exists?
+            return null // return null -- there's a function to find nodes so just use that if that's what you're trying to do
+        } else if (!node.value) {
+            return new Error('Node.value is undefined!')
         }
     }
 
@@ -115,9 +114,9 @@ export default class Tree {
         const node = new Node(value)
 
         if (this.root) {
-            const prev = this.router(this.root, value)
+            const prev = this.router(value)
 
-            if (value !== prev.value) {
+            if (prev !== null) {
                 if (value < prev.value) {
                     prev.left = node
                 } else {
@@ -147,13 +146,14 @@ export default class Tree {
                 this.root = null
             }
         } else {
-            const node = this.router(this.root, value)
+            const data = this.find(value, true)
+            const node = data[0]
+            const parent = data[1]
 
             if (node.value === value) { // router might return would-be parent if value not found (as if appending)
-                const parent = this.findParent(node)
+                // const parent = this.findParent(node)
 
                 if (node === parent.left) {
-                    // parent.left = null
                     if (node.left) {
                         if (node.right) {
                             const mostRight = this.findMostRight(node.left)
@@ -161,9 +161,7 @@ export default class Tree {
                         }
                     }
                     parent.left = node.left
-                    // need logic to merge left + right children of removed child node and assign to parent.left
                 } else if (node === parent.right) {
-                    // parent.right = null
                     if (node.left) {
                         if (node.right) {
                             const mostRight = this.findMostRight(node.left)
@@ -171,10 +169,8 @@ export default class Tree {
                         }
                     }
                     parent.right = node.left
-                    // need logic to merge left + right children of removed child and assign to parent.right
                 } else {
-                    console.log(node, parent.left, parent.right, parent)
-                    console.log('doh')
+                    return parent // return error from findParent
                 }
             } else {
                 return new Error("Value not found! Tree unchanged.")
@@ -182,25 +178,60 @@ export default class Tree {
         }
     }
 
-    find(value, node = this.root) {
-        if (value < node.value) {
-            if (node.left) {
-                return this.find(value, node.left)
+    // find(value, node = this.root) {
+    //     if (value < node.value) {
+    //         if (node.left) {
+    //             return this.find(value, node.left)
+    //         } else {
+    //             return new Error('Node not found!')
+    //         }
+    //     } else if (value > node.value) {
+    //         if (node.right) {
+    //             return this.find(value, node.right)
+    //         } else {
+    //             return new Error('Node not found!')
+    //         }
+    //     } else {
+    //         return node
+    //     }
+    // }
+
+    find(value, findParent = false, prev = this.root) {
+        if (value !== prev.left.value && value !== prev.right.value) {
+            if (value < prev.value) {
+                if (prev.left) {
+                    prev = prev.left
+                    return this.find(value, findParent, prev)
+                } else {
+                    return new Error('Node not found!')
+                }
             } else {
-                return new Error('Node not found!')
-            }
-        } else if (value > node.value) {
-            if (node.right) {
-                return this.find(value, node.right)
-            } else {
-                return new Error('Node not found!')
+                if (prev.right) {
+                    prev = prev.right
+                    return this.find(value, findParent, prev)
+                } else {
+                    return new Error('Node not found!')
+                }
             }
         } else {
-            return node
+            if (value === prev.left.value) {
+                if (findParent) {
+                    return [prev.left, prev]
+                } else {
+                    return prev.left
+                }
+            } else if (value === prev.right.value) {
+                if (findParent) {
+                    return [prev.right, prev]
+                } else {
+                    return prev.right
+                }
+            }
         }
+        return new Error("Node not found!")
     }
 
-    findParent(node, prev = this.root) {
+    findParent(node, prev = this.root, findParent = false) {
         if (node !== prev.left && node !== prev.right) {
             if (node.value < prev.value) {
                 prev = prev.left
