@@ -12,7 +12,7 @@ export default class Tree {
     }
 
     buildBranch(array, parent) {
-        console.log('array:', array, ' length:', array.length, ' parent.value:', parent.value, ' parent:', parent)
+        // console.log('array:', array, ' length:', array.length, ' parent.value:', parent.value, ' parent:', parent)
         if (array.length === 1) {
             if (array[0] < parent.value) {
                 parent.left = new Node(array[0])
@@ -146,89 +146,70 @@ export default class Tree {
                 this.root = null
             }
         } else {
+            let node;
+            let parent;
             const data = this.find(value, true)
-            const node = data[0]
-            const parent = data[1]
 
-            if (node.value === value) { // router might return would-be parent if value not found (as if appending)
-                // const parent = this.findParent(node)
-
-                if (node === parent.left) {
-                    if (node.left) {
-                        if (node.right) {
-                            const mostRight = this.findMostRight(node.left)
-                            mostRight.right = node.right
-                        }
-                    }
-                    parent.left = node.left
-                } else if (node === parent.right) {
-                    if (node.left) {
-                        if (node.right) {
-                            const mostRight = this.findMostRight(node.left)
-                            mostRight.right = node.right
-                        }
-                    }
-                    parent.right = node.left
-                } else {
-                    return parent // return error from findParent
-                }
+            if (typeof data === 'object' && data.length === 2) {
+                node = data[0]
+                parent = data[1]
             } else {
-                return new Error("Value not found! Tree unchanged.")
+                return data // return error from find()
+            }
+
+            if (node === parent.left) {
+                if (node.left) {
+                    if (node.right) {
+                        const mostRight = this.findMostRight(node.left)
+                        mostRight.right = node.right
+                    }
+                }
+                parent.left = node.left
+            } else if (node === parent.right) {
+                if (node.left) {
+                    if (node.right) {
+                        const mostRight = this.findMostRight(node.left)
+                        mostRight.right = node.right
+                    }
+                }
+                parent.right = node.left
             }
         }
     }
 
-    // find(value, node = this.root) {
-    //     if (value < node.value) {
-    //         if (node.left) {
-    //             return this.find(value, node.left)
-    //         } else {
-    //             return new Error('Node not found!')
-    //         }
-    //     } else if (value > node.value) {
-    //         if (node.right) {
-    //             return this.find(value, node.right)
-    //         } else {
-    //             return new Error('Node not found!')
-    //         }
-    //     } else {
-    //         return node
-    //     }
-    // }
-
-    find(value, findParent = false, prev = this.root) {
-        if (value !== prev.left.value && value !== prev.right.value) {
-            if (value < prev.value) {
-                if (prev.left) {
-                    prev = prev.left
-                    return this.find(value, findParent, prev)
-                } else {
-                    return new Error('Node not found!')
-                }
+    find(value, findParent = false, prev = this.root, curr = null) {
+        if (curr === null) {
+             if (value === prev.value) { // value to find === root?
+                 return prev // return root
+             } else {
+                 curr = prev
+                 return this.find(value, findParent, prev, curr)
+             }
+        } else if (value === curr.value) {
+            if (findParent) {
+                return [curr, prev]
             } else {
-                if (prev.right) {
-                    prev = prev.right
-                    return this.find(value, findParent, prev)
-                } else {
-                    return new Error('Node not found!')
-                }
+                return curr
             }
-        } else {
-            if (value === prev.left.value) {
-                if (findParent) {
-                    return [prev.left, prev]
-                } else {
-                    return prev.left
-                }
-            } else if (value === prev.right.value) {
-                if (findParent) {
-                    return [prev.right, prev]
-                } else {
-                    return prev.right
-                }
+        } else if (value < curr.value) {
+            if (curr.left) {
+                prev = curr
+                curr = curr.left
+                return this.find(value, findParent, prev, curr)
+            } else {
+                return new Error('Node not found!')
             }
+        } else if (value > curr.value) {
+            if (prev.right) {
+                prev = curr
+                curr = curr.right
+                return this.find(value, findParent, prev, curr)
+            } else {
+                return new Error('Node not found!')
+            }
+        } else if (!curr.value) {
+            return new Error('Encountered node without value and cannot continue!')
         }
-        return new Error("Node not found!")
     }
 
     findParent(node, prev = this.root, findParent = false) {
