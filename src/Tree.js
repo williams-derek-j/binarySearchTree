@@ -90,15 +90,15 @@ export default class Tree {
         }
     }
 
-    router(value, node = this.root) {
+    router(value, node = this.root) { // returns parent with empty child closest to value
         if (value < node.value) {
-            if (node.left) { // at bottom of tree?
+            if (node.left) { // at end of tree?
                 return this.router(value, node.left) // not yet, recurse
             } else {
                 return node // yes, return parent
             }
         } else if (value > node.value) {
-            if (node.right) { // at bottom of tree?
+            if (node.right) { // at end of tree?
                 return this.router(value, node.right) // not yet, recurse
             } else {
                 return node // yes, return parent
@@ -130,14 +130,128 @@ export default class Tree {
         }
     }
 
-    remove(value) {
+    routerInsert(value, node = this.root) { // returns parent whose occupied child slots are first place inserted value fits, rather than first empty child
+        if (value < node.value) {
+            if (node.left) {
+                if (value > node.left.value) {
+                    return node
+                } else if (value < node.left.value) {
+                    return this.routerInsert(value, node.left)
+                } else { // duplicate found, return null
+                    return null
+                }
+            } else { // found empty child slot
+                return node
+            }
+        } else if (value > node.value) {
+            if (node.right) {
+                if (value < node.right.value) {
+                    return node
+                } else if (value > node.right.value) {
+                    return this.routerInsert(value, node.right)
+                } else {
+                    return null // duplicate found, return null
+                }
+            } else { // found empty child slot
+                return node
+            }
+        }
+    }
+
+    insert(value) {
+        const parent = this.routerInsert(value)
+        let grandparent
+
+        if (parent !== null) {
+            grandparent = this.findParent(parent)
+
+            if (grandparent === null) {
+                console.log('gp is root', 'parent:',parent, ' gp:',grandparent)
+                if (value < parent.value) { // new node is left child of parent
+                    const node = new Node(value)
+
+                    node.left = parent.left
+                    node.right = parent.left.right
+
+                    parent.left.right = null
+                    parent.left = node
+
+                    if (node.right !== null) {
+                        this.remove(value, node.right) // check for + remove duplicates
+                    }
+
+                } else if (value > parent.value) { // new node is right child of parent
+                    const node = new Node(value)
+
+                    node.right = parent.right
+                    node.left = parent.right.left
+
+                    parent.right.left = null
+                    parent.right = node
+
+                    if (node.left !== null) {
+                        this.remove(value, node.left) // check for + remove duplicates
+                    }
+
+                } else if (value === parent.value) {
+                    console.log(new Error('Value is already at lowest depth! Therefore duplicate value! Tree unchanged.'))
+                }
+            } else {
+                console.log('value:', value, ' parent:',parent,' grandparent:',grandparent)
+
+                for (let prop in grandparent) {
+                    if (grandparent[prop] === parent) {
+                        let node = new Node(value)
+
+                        if (node.value > parent.value) { // new node will be right child of parent
+                            if (prop === 'right') { // parent is right child of grandparent
+
+                                node.right = parent.right
+                                parent.right = node
+                                grandparent.right = parent
+
+                                if (node.right !== null) { // check to make sure the starting search node to pass to remove() isn't null, which sets starting node to root and will end up removing the value we just inserted
+                                    this.remove(value, node.right) // check for + remove duplicates
+                                }
+                            } else { // parent is left child of grandparent
+                                node.left = parent.left
+                                parent.left = node
+                            }
+                        } else if (node.value < parent.value) { // new node will be left child of parent
+                            if (prop === 'left') { // parent is left child of grandparent
+
+                                node.left = parent.left
+                                parent.left = node
+                                grandparent.left = parent
+
+                                if (node.left !== null) { // check to make sure the starting search node to pass to remove() isn't null, which sets starting node to root and will end up removing the value we just inserted
+                                    this.remove(value, node.left) // check for + remove duplicates
+                                }
+                            } else { // parent is right child of grandparent
+                                node.right = parent.right
+                                parent.right = node
+                            }
+                        } else if (node.value === parent.value) {
+                            console.log(new Error('Value is already at lowest depth! Therefore duplicate value! Tree unchanged.'))
+                            return
+                        }
+                    }
+                }
+            }
+        } else {
+            console.log("insert:", value, ' ', new Error('Value is already at lowest depth! Therefore duplicate value! Tree unchanged.'))
+        }
+    }
+
+    remove(value, node = null) {
+        // console.log('remove -', 'starting node:',node)
         if (this.root.value === value) { // removing root
-            const node = this.root // root assigned to variable for readability
+            node = this.root // root assigned to variable for readability
 
             if (node.left) {
                 if (node.right) {
-                    const mostRight = this.findMostRight(node.left)
-                    mostRight.right = node.right
+                    const biggest = this.findBiggest(node.left)
+                    biggest.right = node.right
                 }
                 this.root = node.left
             } else if (this.root.right) {
@@ -146,46 +260,64 @@ export default class Tree {
                 this.root = null
             }
         } else {
-            let node;
+            // let node;
             let parent;
-            const data = this.find(value, true)
+            const data = this.find(value, true, node)
 
             if (typeof data === 'object' && data.length === 2) {
                 node = data[0]
                 parent = data[1]
             } else {
-                return data // return error from find()
+                console.log(data)
+                return data // return error from find(), value to be removed not found (or remove was called to check + remove)
             }
 
             if (node === parent.left) {
                 if (node.left) {
                     if (node.right) {
-                        const mostRight = this.findMostRight(node.left)
-                        mostRight.right = node.right
+                        const biggest = this.findBiggest(node.left)
+                        biggest.right = node.right
                     }
+                    parent.left = node.left
+                } else if (node.right) {
+                    parent.left = node.right
+                } else {
+                    parent.left = null
                 }
-                parent.left = node.left
             } else if (node === parent.right) {
                 if (node.left) {
                     if (node.right) {
-                        const mostRight = this.findMostRight(node.left)
-                        mostRight.right = node.right
+                        const biggest = this.findBiggest(node.left)
+                        biggest.right = node.right
                     }
+                    parent.right = node.left
+                } else if (node.right) {
+                    parent.right = node.right
+                } else {
+                    parent.right = null
                 }
-                parent.right = node.left
             }
         }
     }
 
     find(value, findParent = false, prev = this.root, curr = null) {
+        if (prev === null) {
+            prev = this.root
+        }
+        // console.log('find, prev:', prev, ' curr:', curr, ' val:', value)
         if (curr === null) {
-             if (value === prev.value) { // value to find === root?
-                 return prev // return root
+             if (value === prev.value) { // value to find === root/starting node?
+                 if (findParent) {
+                     return [prev, this.findParent(prev)]
+                 } else {
+                    return prev // return root
+                 }
              } else {
                  curr = prev
                  return this.find(value, findParent, prev, curr)
              }
         } else if (value === curr.value) {
+            // console.log('find returning, fp:', findParent, ' curr:', curr, ' prev:', prev)
             if (findParent) {
                 return [curr, prev]
             } else {
@@ -200,7 +332,7 @@ export default class Tree {
                 return new Error('Node not found!')
             }
         } else if (value > curr.value) {
-            if (prev.right) {
+            if (curr.right) {
                 prev = curr
                 curr = curr.right
                 return this.find(value, findParent, prev, curr)
@@ -212,12 +344,16 @@ export default class Tree {
         }
     }
 
-    findParent(node, prev = this.root, findParent = false) {
+    findParent(node, prev = this.root) {
+        // console.log('findparent', node, prev)
+        if (node === this.root) {
+            return null
+        }
         if (node !== prev.left && node !== prev.right) {
             if (node.value < prev.value) {
                 prev = prev.left
                 return this.findParent(node, prev)
-            } else {
+            } else if (node.value > prev.value) {
                 prev = prev.right
                 return this.findParent(node, prev)
             }
@@ -231,9 +367,9 @@ export default class Tree {
         return new Error("Node not found!")
     }
 
-    findMostRight(node = this.root) {
+    findBiggest(node = this.root) {
         if (node.right) {
-            return this.findMostRight(node.right)
+            return this.findBiggest(node.right)
         } else {
             return node
         }
