@@ -115,6 +115,7 @@ export default class Tree {
 
         if (this.root) {
             const prev = this.router(value)
+            console.log(prev)
 
             if (prev !== null) {
                 if (value < prev.value) {
@@ -211,7 +212,26 @@ export default class Tree {
                                 grandparent.right = parent
 
                                 if (node.right !== null) { // check to make sure the starting search node to pass to remove() isn't null, which sets starting node to root and will end up removing the value we just inserted
-                                    this.remove(value, node.right) // check for + remove duplicates
+                                    const duplicate = this.find(node.value, false, node.right)
+
+                                    if (duplicate !== null) {
+                                        if (duplicate.left !== null) {
+                                            node.left = duplicate.left
+                                            node.left.right = duplicate.right
+                                        }
+                                    }
+                                    this.removeAll(value, node.right)
+                                }
+                                if (parent.left !== null) {
+                                    const duplicate = this.find(node.value, false, parent.left)
+
+                                    if (duplicate !== null) {
+                                        if (duplicate.left !== null) {
+                                            node.left = duplicate.left
+                                            node.left.right = duplicate.right
+                                        }
+                                    }
+                                    this.removeAll(value, parent.left)
                                 }
                             } else { // parent is left child of grandparent
                                 node.left = parent.left
@@ -225,7 +245,25 @@ export default class Tree {
                                 grandparent.left = parent
 
                                 if (node.left !== null) { // check to make sure the starting search node to pass to remove() isn't null, which sets starting node to root and will end up removing the value we just inserted
-                                    this.remove(value, node.left) // check for + remove duplicates
+                                    const duplicate = this.find(node.value, false, node.left)
+
+                                    if (duplicate !== null) {
+                                        if (duplicate.right !== null) {
+                                            node.right = duplicate.right
+                                            node.right.left = duplicate.left
+                                        }
+                                    }
+                                    this.removeAll(value, node.left) // check for + remove duplicates
+                                } if (parent.right !== null) {
+                                    const duplicate = this.find(node.value, false, parent.left)
+
+                                    if (duplicate !== null) {
+                                        if (duplicate.right !== null) {
+                                            node.right = duplicate.right
+                                            node.right.left = duplicate.left
+                                        }
+                                    }
+                                    this.removeAll(value, parent.right)
                                 }
                             } else { // parent is right child of grandparent
                                 node.right = parent.right
@@ -264,12 +302,15 @@ export default class Tree {
             let parent;
             const data = this.find(value, true, node)
 
-            if (typeof data === 'object' && data.length === 2) {
-                node = data[0]
-                parent = data[1]
+            if (data !== null) {
+                if (typeof data === 'object' && data.length === 2) {
+                    node = data[0]
+                    parent = data[1]
+                }
             } else {
-                console.log(data)
-                return data // return error from find(), value to be removed not found (or remove was called to check + remove)
+                console.log(new Error("Couldn't remove value, node not found!"))
+                return
+                // return data // return error from find(), value to be removed not found (or remove was called to check + remove)
             }
 
             if (node === parent.left) {
@@ -300,9 +341,55 @@ export default class Tree {
         }
     }
 
+    removeAll(value, node = null) {
+        if (node === null) {
+            node = this.root
+        }
+        if (node.value === value) {
+            node = null
+        } else {
+            const data = this.find(value, true, node)
+            let parent;
+
+            if (data !== null) {
+                if (typeof data === 'object' && data.length === 2) {
+                    node = data[0]
+                    parent = data[1]
+                }
+            } else {
+                console.log(new Error("Couldn't remove value, node not found!"))
+                return
+                // return data // return error from find(), value to be removed not found (or remove was called to check + remove)
+            }
+
+            if (typeof data === 'object' && data.length === 2) {
+                node = data[0]
+                parent = data[1]
+
+                for (let prop in parent) {
+                    if (parent[prop] === node) {
+                        parent[prop] = null
+                    }
+                }
+                node = null
+            } else {
+                console.log(data)
+                return data // return error from find(), value to be removed not found (or remove was called to check + remove)
+            }
+        }
+    }
+
     find(value, findParent = false, prev = this.root, curr = null) {
         if (prev === null) {
             prev = this.root
+
+            if (value === prev.value) {
+                if (findParent) {
+                    return [prev, null]
+                } else {
+                    return prev
+                }
+            }
         }
         // console.log('find, prev:', prev, ' curr:', curr, ' val:', value)
         if (curr === null) {
@@ -329,7 +416,8 @@ export default class Tree {
                 curr = curr.left
                 return this.find(value, findParent, prev, curr)
             } else {
-                return new Error('Node not found!')
+                return null
+                // return new Error('Node not found!')
             }
         } else if (value > curr.value) {
             if (curr.right) {
@@ -337,7 +425,8 @@ export default class Tree {
                 curr = curr.right
                 return this.find(value, findParent, prev, curr)
             } else {
-                return new Error('Node not found!')
+                return null
+                // return new Error('Node not found!')
             }
         } else if (!curr.value) {
             return new Error('Encountered node without value and cannot continue!')
