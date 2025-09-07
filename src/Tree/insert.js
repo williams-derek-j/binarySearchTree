@@ -60,7 +60,7 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
             console.log("!")
         }
     } else {
-        console.log(new Error("Couldn't insert value -- Duplicate found! Tree unchanged."))
+        console.log(new Error("Couldn't insert value -- Duplicate found at lowest depth! Tree unchanged."))
         return
     }
 
@@ -89,7 +89,16 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
                 } else {
                     const orphans = []
 
-                    this.traverse((node) => {orphans.push(node.value)}, 'inorder', moved.left)
+                    this.traverse((node) => {
+                        orphans.push(node.value)
+
+                        if (node.left) { // remove nodes of orphans we are re-inserting
+                            node.left = null
+                        }
+                        if (node.right) {
+                            node.right = null
+                        }
+                    }, 'inorder', moved.left)
 
                     orphans.forEach((orphan) => {
                         this.insert(orphan, inserted, false)
@@ -107,7 +116,16 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
                 } else {
                     const orphans = []
 
-                    this.traverse((node) => {orphans.push(node.value)}, 'inorder', moved.right)
+                    this.traverse((node) => {
+                        orphans.push(node.value)
+
+                        if (node.left) { // remove nodes of orphans we are re-inserting
+                            node.left = null
+                        }
+                        if (node.right) {
+                            node.right = null
+                        }
+                    }, 'inorder', moved.right)
 
                     orphans.forEach((orphan) => {
                         this.insert(orphan, inserted, false)

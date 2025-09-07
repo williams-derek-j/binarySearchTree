@@ -14,28 +14,28 @@ function routerAppend(value, node) { // returns parent with empty child closest 
             return node // yes, return parent
         }
     } else if (value === node.value) { // node with value already exists?
-        return null // return null -- there's a function to find nodes so just use that if that's what you're trying to do
+        return null
     } else if (!node.value) {
         return new Error('Node.value is undefined!')
     }
 }
 
-export default function append(value) {
-    const node = new Node(value)
+export default function append(value, node = this.root) {
+    const appended = new Node(value)
 
-    if (this.root) {
-        const prev = routerAppend(value, this.root)
+    if (this.root !== null) {
+        const parent = routerAppend(value, node)
 
-        if (prev !== null) {
-            if (value < prev.value) {
-                prev.left = node
+        if (parent !== null) { // router returns null if duplicate found
+            if (value < parent.value) {
+                parent.left = appended
             } else {
-                prev.right = node
+                parent.right = appended
             }
-        } else {
+        } else { // duplicate found
             return new Error("Duplicate value! Tree unchanged.")
         }
     } else {
-        this.root = node
+        this.root = appended
     }
 }
