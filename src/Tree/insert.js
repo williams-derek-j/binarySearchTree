@@ -1,7 +1,6 @@
 import Node from "../Node";
 
 function findMostRight(node) { // rename most right
-    console.log(node)
     if (node.right) {
         return findMostRight(node.right)
     } else {
@@ -37,8 +36,12 @@ function routerInsert(value, node) { // returns parent whose occupied child slot
     }
 }
 
-export default function insert(value, node = this.root) {
-    const found = this.find(value, true, node)
+export default function insert(value, node = this.root, checkDuplicates = true) {
+    let found = null;
+
+    if (checkDuplicates === true) {
+        found = this.find(value, true, node)
+    }
 
     const inserted = new Node(value)
     const parent = routerInsert(value, node)
@@ -84,7 +87,13 @@ export default function insert(value, node = this.root) {
                     mostRight = findMostRight(inserted)
                     mostRight.left = moved.left
                 } else {
-                    // get nodes one by one and insert them
+                    const orphans = []
+
+                    this.traverse((node) => {orphans.push(node.value)}, 'inorder', moved.left)
+
+                    orphans.forEach((orphan) => {
+                        this.insert(orphan, inserted, false)
+                    })
                 }
             }
         } else if (side === 'right') { // inserted node is right child of parent
@@ -96,7 +105,13 @@ export default function insert(value, node = this.root) {
                     mostRight = findMostRight(inserted.left)
                     mostRight.right = moved.right
                 } else {
-                    // get nodes one by one and insert them
+                    const orphans = []
+
+                    this.traverse((node) => {orphans.push(node.value)}, 'inorder', moved.right)
+
+                    orphans.forEach((orphan) => {
+                        this.insert(orphan, inserted, false)
+                    })
                 }
             }
         }
