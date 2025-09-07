@@ -1,7 +1,6 @@
 import Node from "../Node";
 
 export default function build(array, parent) {
-    // console.log('array:', array, ' length:', array.length, ' parent.value:', parent.value, ' parent:', parent)
     if (array.length === 1) {
         if (array[0] < parent.value) {
             parent.left = new Node(array[0])

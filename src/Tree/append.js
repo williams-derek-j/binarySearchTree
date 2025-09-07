@@ -1,6 +1,6 @@
 import Node from "../Node";
 
-function routerAppend(value, node = this.root) { // returns parent with empty child closest to value
+function routerAppend(value, node) { // returns parent with empty child closest to value
     if (value < node.value) {
         if (node.left) { // at end of tree?
             return routerAppend(value, node.left) // not yet, recurse
