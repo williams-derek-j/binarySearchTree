@@ -1,5 +1,29 @@
 import Node from "../Node";
 
+function findHeight(node) {
+    let left = 0
+    let right = 0
+
+    if (node.left === null && node.right === null) {
+        return left
+    } else {
+        if (node.left) {
+            left = 1 + findHeight(node.left)
+        }
+        if (node.right) {
+            right = 1 + findHeight(node.right)
+        }
+
+        if (left === right) {
+            return left
+        } else if (left < right) {
+            return right
+        } else if (left > right) {
+            return left
+        }
+    }
+}
+
 function findMostRight(node) { // rename most right
     if (node.right) {
         return findMostRight(node.right)
@@ -50,15 +74,34 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
     if (parent !== null) { // routerInsert() returns null if value already exists at lowest depth
         if (inserted.value < parent.value) { // inserted node will be left child of parent
             side = 'left' // left
+
+            // if (parent.left === null && parent.right === null) {
+            //     parent.height =  parent.height + 1
+            // }
+
             inserted.left = parent.left
             parent.left = inserted
+
+            if (inserted.left !== null) {
+                inserted.height = inserted.left.height + 1
+            }
         } else if (inserted.value > parent.value) { // inserted node will be right child of parent
             side = 'right' // right
+
+            // if (parent.right === null && parent.left === null) {
+            //     parent.height =  parent.height + 1
+            // }
+
             inserted.right = parent.right
             parent.right = inserted
+
+            if (inserted.right !== null) {
+                inserted.height = inserted.right.height + 1
+            }
         } else {
             console.log("!")
         }
+        inserted.depth = parent._depth + 1
     } else {
         console.log(new Error("Couldn't insert value -- Duplicate found at lowest depth! Tree unchanged."))
         return
@@ -70,22 +113,46 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
         if (found.length === 2) {
             let movedParent = found[1]
 
+            moved.height = 0 // send event up chain and force parent+ to compare updated heights of children
+
             for (let prop in movedParent) { // delete moved node
                 if (movedParent[prop] === moved) {
                     movedParent[prop] = null
+
+                    // if (prop === '_left') {
+                    //     if (movedParent.right === null) {
+                    //         movedParent.height = movedParent.height - 1
+                    //     }
+                    // } else if (prop === '_right') {
+                    //     if (movedParent.left === null) {
+                    //         movedParent.height = movedParent.height - 1
+                    //     }
+                    // }
                 }
             }
         }
 
-        let mostRight
         if (side === 'left') { // inserted node is left child of parent
             if (moved.right) {
+                moved.right.depth = inserted.depth + 1
+
                 inserted.right = moved.right
+
+                const mostRight = findMostRight(inserted)
+                mostRight.height = 0
+
+                // if (moved.right.height > inserted.height) {
+                //     inserted.height = moved.right.height + 1
+                // }
             }
             if (moved.left) {
                 if (inserted.right) { // was there a moved.right?
-                    mostRight = findMostRight(inserted)
+                    const mostRight = findMostRight(inserted)
+
+                    moved.left.depth = mostRight.depth + 1 // push depth all the way down to the appended portion of the split/broken subtree
+
                     mostRight.left = moved.left
+                    mostRight.height = findHeight(mostRight.left)
                 } else {
                     const orphans = []
 
@@ -107,12 +174,25 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
             }
         } else if (side === 'right') { // inserted node is right child of parent
             if (moved.left) {
+                moved.left.depth = inserted.depth + 1
+
                 inserted.left = moved.left
+
+                const mostRight = findMostRight(moved.left)
+                mostRight.height = 0
+
+                // if (moved.left.height > inserted.height) {
+                //     inserted.height = moved.left.height + 1
+                // }
             }
             if (moved.right) {
                 if (inserted.left) { // was there a moved.left?
-                    mostRight = findMostRight(inserted.left)
+                    const mostRight = findMostRight(inserted.left)
+
+                    moved.right.depth = mostRight.depth + 1
+
                     mostRight.right = moved.right
+                    mostRight.height = findHeight(mostRight.right)
                 } else {
                     const orphans = []
 
@@ -134,5 +214,5 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
             }
         }
     }
-    inserted.depth = parent._depth + 1
+    // inserted.depth = parent._depth + 1
 }

@@ -29,14 +29,23 @@ export default function append(value, node = this.root) {
         if (parent !== null) { // router returns null if duplicate found
             if (value < parent.value) {
                 parent.left = appended
+
+                // if (parent.right === null) {
+                //     parent.height = parent.height + 1
+                // }
             } else {
                 parent.right = appended
+
+                // if (parent.left === null) {
+                //     parent.height =  parent.height + 1
+                // }
             }
         } else { // duplicate found
             return new Error("Duplicate value! Tree unchanged.")
         }
 
-        appended.depth = parent._depth + 1
+        appended.depth = parent.depth + 1
+        appended.height = 0
     } else {
         this.root = appended
     }
