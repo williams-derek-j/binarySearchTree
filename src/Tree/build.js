@@ -7,8 +7,9 @@ export default function build(array, parent) {
             node.depth = parent._depth + 1;
 
             parent.left = node
+            node.height = 0
 
-            parent.left.height = 0
+            // parent.left.height = 0
             // if (parent.right === null) {
             //     parent.height = parent.height + 1
             // }
@@ -17,8 +18,9 @@ export default function build(array, parent) {
             node.depth = parent._depth + 1;
 
             parent.right = node
+            node.height = 0
 
-            parent.right.height = 0
+            // parent.right.height = 0
             // if (parent.left === null) {
             //     parent.height = parent.height + 1
             // }
@@ -32,13 +34,15 @@ export default function build(array, parent) {
             node.depth = parent._depth + 1;
 
             parent.left = node
-            parent.left.height = 0
+            node.height = 0
+            // parent.left.height = 0
 
             node = new Node(array[1]);
             node.depth = parent._depth + 1;
 
             parent.right = node
-            parent.right.height = 0
+            node.height = 0
+            // parent.right.height = 0
 
             // parent.height = parent.height + 1
 
@@ -47,13 +51,15 @@ export default function build(array, parent) {
             node.depth = parent._depth + 1;
 
             parent.left = node
-            parent.left.height = 0
+            node.height = 0
+            // parent.left.height = 0
 
             node = new Node(array[0]);
             node.depth = parent._depth + 1;
 
             parent.right = node
-            parent.right.height = 0
+            node.height = 0
+            // parent.right.height = 0
 
             // parent.height = parent.height + 1
 
@@ -63,7 +69,8 @@ export default function build(array, parent) {
                 node.depth = parent._depth + 1;
 
                 parent.left = node
-                parent.left.height = 0
+                node.height = 0
+                // parent.left.height = 0
 
                 // parent.height = parent.height + 1
 
@@ -74,7 +81,8 @@ export default function build(array, parent) {
                 node.depth = parent._depth + 1;
 
                 parent.right = node
-                parent.right.height = 0
+                node.height = 0
+                // parent.right.height = 0
 
                 // parent.height = parent.height + 1
 
@@ -92,7 +100,8 @@ export default function build(array, parent) {
                 node.depth = parent._depth + 1;
 
                 parent.left = node
-                parent.left.height = 0
+                node.height = 0
+                // parent.left.height = 0
 
                 // parent.height = parent.height + 1
 
@@ -103,7 +112,8 @@ export default function build(array, parent) {
                 node.depth = parent._depth + 1;
 
                 parent.right = node
-                parent.right.height = 0
+                node.height = 0
+                // parent.right.height = 0
 
                 // parent.height = parent.height + 1
 
@@ -120,13 +130,17 @@ export default function build(array, parent) {
 
     } else if (array.length >= 3) {
         const midpoint = Math.round(array.length / 2) - 1
+        console.log('mp', midpoint, array[midpoint])
 
         if (array[midpoint] < parent.value) {
             const node = new Node(array[midpoint])
             node.depth = parent._depth + 1
 
+            console.log('pl', parent, node, array, parent.left)
             parent.left = node;
-            parent.left.height = 0
+            node.height = 0
+            // parent.left.height = 0
+            console.log('pl2', parent.left)
 
             // if (parent.right === null) {
             //     parent.height = parent.height + 1
@@ -140,7 +154,8 @@ export default function build(array, parent) {
             node.depth = parent._depth + 1;
 
             parent.right = node
-            parent.right.height = 0
+            node.height = 0
+            // parent.right.height = 0
 
             // if (parent.left === null) {
             //     parent.height = parent.height + 1
