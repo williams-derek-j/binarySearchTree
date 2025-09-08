@@ -110,10 +110,12 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
     if (found !== null) { // find() returns null if it finds nothing
         let moved = found[0] // moved is a duplicate of inserted value higher in the tree -- copy its children to append to inserted node at lower depth
 
+        moved.height = -1  // send event up chain and force parent+ to compare updated heights of children
+
         if (found.length === 2) {
             let movedParent = found[1]
 
-            moved.height = -1  // send event up chain and force parent+ to compare updated heights of children
+            // moved.height = -1  // send event up chain and force parent+ to compare updated heights of children
 
             for (let prop in movedParent) { // delete moved node
                 if (movedParent[prop] === moved) {
@@ -132,87 +134,125 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
             }
         }
 
-        if (side === 'left') { // inserted node is left child of parent
-            if (moved.right) {
-                moved.right.depth = inserted.depth + 1
+        let orphans = []
 
-                inserted.right = moved.right
+        if (moved.left !== null) {
+            this.traverse((node) => {
+                orphans.push(node.value)
 
-                const mostRight = findMostRight(inserted)
-                mostRight.height = 0
-
-                // if (moved.right.height > inserted.height) {
-                //     inserted.height = moved.right.height + 1
-                // }
-            }
-            if (moved.left) {
-                if (inserted.right) { // was there a moved.right?
-                    const mostRight = findMostRight(inserted)
-
-                    moved.left.depth = mostRight.depth + 1 // push depth all the way down to the appended portion of the split/broken subtree
-
-                    mostRight.left = moved.left
-                    mostRight.height = findHeight(mostRight.left)
-                } else {
-                    const orphans = []
-
-                    this.traverse((node) => {
-                        orphans.push(node.value)
-
-                        if (node.left) { // remove nodes of orphans we are re-inserting
-                            node.left = null
-                        }
-                        if (node.right) {
-                            node.right = null
-                        }
-                    }, 'inorder', moved.left)
-
-                    orphans.forEach((orphan) => {
-                        this.insert(orphan, inserted, false)
-                    })
+                if (node.left) { // remove nodes of orphans we are re-inserting
+                    node.left = null
                 }
-            }
-        } else if (side === 'right') { // inserted node is right child of parent
-            if (moved.left) {
-                moved.left.depth = inserted.depth + 1
-
-                inserted.left = moved.left
-
-                const mostRight = findMostRight(moved.left)
-                mostRight.height = 0
-
-                // if (moved.left.height > inserted.height) {
-                //     inserted.height = moved.left.height + 1
-                // }
-            }
-            if (moved.right) {
-                if (inserted.left) { // was there a moved.left?
-                    const mostRight = findMostRight(inserted.left)
-
-                    moved.right.depth = mostRight.depth + 1
-
-                    mostRight.right = moved.right
-                    mostRight.height = findHeight(mostRight.right)
-                } else {
-                    const orphans = []
-
-                    this.traverse((node) => {
-                        orphans.push(node.value)
-
-                        if (node.left) { // remove nodes of orphans we are re-inserting
-                            node.left = null
-                        }
-                        if (node.right) {
-                            node.right = null
-                        }
-                    }, 'inorder', moved.right)
-
-                    orphans.forEach((orphan) => {
-                        this.insert(orphan, inserted, false)
-                    })
+                if (node.right) {
+                    node.right = null
                 }
-            }
+            }, 'inorder', moved.left)
+
+            orphans.forEach((orphan) => {
+                this.insert(orphan, inserted, false)
+            })
+
+            orphans = []
         }
+
+        if (moved.right !== null) {
+            this.traverse((node) => {
+                orphans.push(node.value)
+
+                if (node.left) { // remove nodes of orphans we are re-inserting
+                    node.left = null
+                }
+                if (node.right) {
+                    node.right = null
+                }
+            }, 'inorder', moved.right)
+
+            orphans.forEach((orphan) => {
+                this.insert(orphan, inserted, false)
+            })
+        }
+
+        // if (side === 'left') { // inserted node is left child of parent
+        //     if (moved.right) {
+        //         moved.right.depth = inserted.depth + 1
+        //
+        //         inserted.right = moved.right
+        //
+        //         const mostRight = findMostRight(inserted)
+        //         mostRight.height = 0
+        //
+        //         // if (moved.right.height > inserted.height) {
+        //         //     inserted.height = moved.right.height + 1
+        //         // }
+        //     }
+        //     if (moved.left) {
+        //         if (inserted.right) { // was there a moved.right?
+        //             const mostRight = findMostRight(inserted)
+        //
+        //             moved.left.depth = mostRight.depth + 1 // push depth all the way down to the appended portion of the split/broken subtree
+        //
+        //             mostRight.left = moved.left
+        //             mostRight.height = findHeight(mostRight.left)
+        //         } else {
+        //             const orphans = []
+        //
+        //             this.traverse((node) => {
+        //                 orphans.push(node.value)
+        //
+        //                 if (node.left) { // remove nodes of orphans we are re-inserting
+        //                     node.left = null
+        //                 }
+        //                 if (node.right) {
+        //                     node.right = null
+        //                 }
+        //             }, 'inorder', moved.left)
+        //
+        //             orphans.forEach((orphan) => {
+        //                 this.insert(orphan, inserted, false)
+        //             })
+        //         }
+        //     }
+        // } else if (side === 'right') { // inserted node is right child of parent
+        //     if (moved.left) {
+        //         moved.left.depth = inserted.depth + 1
+        //
+        //         inserted.left = moved.left
+        //
+        //         const mostRight = findMostRight(moved.left)
+        //         mostRight.height = 0
+        //
+        //         // if (moved.left.height > inserted.height) {
+        //         //     inserted.height = moved.left.height + 1
+        //         // }
+        //     }
+        //     if (moved.right) {
+        //         if (inserted.left) { // was there a moved.left?
+        //             const mostRight = findMostRight(inserted.left)
+        //
+        //             moved.right.depth = mostRight.depth + 1
+        //
+        //             mostRight.right = moved.right
+        //             mostRight.height = findHeight(mostRight.right)
+        //         } else {
+        //             const orphans = []
+        //
+        //             this.traverse((node) => {
+        //                 orphans.push(node.value)
+        //
+        //                 if (node.left) { // remove nodes of orphans we are re-inserting
+        //                     node.left = null
+        //                 }
+        //                 if (node.right) {
+        //                     node.right = null
+        //                 }
+        //             }, 'inorder', moved.right)
+        //
+        //             orphans.forEach((orphan) => {
+        //                 this.insert(orphan, inserted, false)
+        //             })
+        //         }
+        //     }
+        // }
     }
     // inserted.depth = parent._depth + 1
 }

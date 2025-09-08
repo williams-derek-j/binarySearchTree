@@ -83,18 +83,18 @@ export default class Node {
                 if (this.left) {
                     l = this.left.height
                 } else {
-                    l = -1 // essentially setting to null
+                    l = -1 // = null
                 }
                 if (this.right) {
                     r = this.right.height
                 } else {
-                    r = -1 // essentially setting to null
+                    r = -1
                 }
 
                 if (this.height <= l || this.height <= r) {
                     if (l < r) {
                         this.height = 1 + r
-                    } else {
+                    } else { // l > r or l == r
                         this.height = 1 + l
                     }
                 } else {
@@ -102,14 +102,13 @@ export default class Node {
                         if (this.height - r >= 2) {
                             this.height = r + 1
                         }
-                    } else {
+                    } else { // l > r or l == r
                         if (this.height - l >= 2) {
                             this.height = l + 1
                         }
                     }
                 }
             })
-
             this._left = node
         } else {
             this._left = null
@@ -130,9 +129,13 @@ export default class Node {
 
                 if (this.left) {
                     l = this.left.height
+                } else {
+                    l = -1 // = null
                 }
                 if (this.right) {
                     r = this.right.height
+                } else {
+                    r = -1
                 }
 
                 if (this.height <= l || this.height <= r) {
@@ -153,7 +156,6 @@ export default class Node {
                     }
                 }
             })
-
             this._right = node
         } else {
             this._right = null
@@ -162,29 +164,5 @@ export default class Node {
 
     get right() {
         return this._right
-    }
-
-    findHeight(node) {
-        let left = 0
-        let right = 0
-
-        if (node.left === null && node.right === null) {
-            return left
-        } else {
-            if (node.left) {
-                left = 1 + this.findHeight(node.left)
-            }
-            if (node.right) {
-                right = 1 + this.findHeight(node.right)
-            }
-
-            if (left === right) {
-                return left
-            } else if (left < right) {
-                return right
-            } else if (left > right) {
-                return left
-            }
-        }
     }
 }
