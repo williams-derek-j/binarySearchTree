@@ -26,4 +26,29 @@ export default class Tree {
         this.build(array.slice(0, midpoint), this.root) // build left side
         this.build(array.slice(midpoint + 1), this.root) // build right side
     }
-}
+
+//     isBalanced(node) {
+//         let left = node.left._height
+//
+//     //     let left = []
+//     //     let right = []
+//     //
+//     //     if (node.left) {
+//     //         left = this.isBalanced(node.left)
+//     //     } else {
+//     //         left = true
+//     //     }
+//     //
+//     //     if (node.right) {
+//     //         right = this.isBalanced(node.right)
+//     //     } else {
+//     //         right = true
+//     //     }
+//     //
+//     //     if (left && right) {
+//     //         return true
+//     //     } else {
+//     //         return false
+//     //     }
+//     // }
+// }

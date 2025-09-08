@@ -134,4 +134,5 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
             }
         }
     }
+    inserted.depth = parent._depth + 1
 }

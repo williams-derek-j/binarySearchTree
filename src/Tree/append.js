@@ -35,6 +35,8 @@ export default function append(value, node = this.root) {
         } else { // duplicate found
             return new Error("Duplicate value! Tree unchanged.")
         }
+
+        appended.depth = parent._depth + 1
     } else {
         this.root = appended
     }

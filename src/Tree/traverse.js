@@ -37,5 +37,7 @@ export default function traverse(callback, mode = 'inorder', node = this.root) {
         inorder(node, callback)
     } else if (mode === 'postorder') {
         postorder(node, callback)
+    } else {
+        return new Error('Mode not selected! Format is traverse(callback, mode, node)')
     }
 }
