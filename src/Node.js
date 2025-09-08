@@ -23,7 +23,7 @@ export default class Node {
                             this.events[eventName].splice(i, 1);
                             break;
                         }
-                    };
+                    }
                 }
             },
             emit: function (eventName, data) {
@@ -59,7 +59,6 @@ export default class Node {
     }
 
     set height(value) {
-        // console.log('setheight', value, this, this.height)
         this._height = value
 
         if (this.eventsP) {
@@ -77,29 +76,41 @@ export default class Node {
         if (node !== null) {
             node.eventsP = this.events
 
-            this.events.on('childHeightChange', (increase) => {
+            this.events.on('childHeightChange', () => {
                 let l = 0
                 let r = 0
 
                 if (this.left) {
-                    l = this.findHeight(this.left)
+                    l = this.left.height
+                } else {
+                    l = -1 // essentially setting to null
                 }
                 if (this.right) {
-                    r = this.findHeight(this.right)
+                    r = this.right.height
+                } else {
+                    r = -1 // essentially setting to null
                 }
 
-                if (l < r) {
-                    this.height = 1 + r
+                if (this.height <= l || this.height <= r) {
+                    if (l < r) {
+                        this.height = 1 + r
+                    } else {
+                        this.height = 1 + l
+                    }
                 } else {
-                    this.height = 1 + l
+                    if (l < r) {
+                        if (this.height - r >= 2) {
+                            this.height = r + 1
+                        }
+                    } else {
+                        if (this.height - l >= 2) {
+                            this.height = l + 1
+                        }
+                    }
                 }
             })
 
             this._left = node
-
-            if (this.right === null) {
-                this.height = 1
-            }
         } else {
             this._left = null
         }
@@ -118,23 +129,32 @@ export default class Node {
                 let r = 0
 
                 if (this.left) {
-                    l = this.findHeight(this.left)
+                    l = this.left.height
                 }
                 if (this.right) {
-                    r = this.findHeight(this.right)
+                    r = this.right.height
                 }
 
-                if (l < r) {
-                    this.height = 1 + r
+                if (this.height <= l || this.height <= r) {
+                    if (l < r) {
+                        this.height = 1 + r
+                    } else {
+                        this.height = 1 + l
+                    }
                 } else {
-                    this.height = 1 + l
+                    if (l < r) {
+                        if (this.height - r >= 2) {
+                            this.height = r + 1
+                        }
+                    } else {
+                        if (this.height - l >= 2) {
+                            this.height = l + 1
+                        }
+                    }
                 }
             })
-            this._right = node
 
-            if (this.left === null) {
-                this.height = 1
-            }
+            this._right = node
         } else {
             this._right = null
         }

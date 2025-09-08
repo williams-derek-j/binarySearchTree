@@ -28,13 +28,19 @@ export default function append(value, node = this.root) {
 
         if (parent !== null) { // router returns null if duplicate found
             if (value < parent.value) {
+                appended.depth = parent.depth + 1
+
                 parent.left = appended
+                parent.left.height = 0
 
                 // if (parent.right === null) {
                 //     parent.height = parent.height + 1
                 // }
             } else {
+                appended.depth = parent.depth + 1
+
                 parent.right = appended
+                parent.right.height = 0
 
                 // if (parent.left === null) {
                 //     parent.height =  parent.height + 1
@@ -43,10 +49,11 @@ export default function append(value, node = this.root) {
         } else { // duplicate found
             return new Error("Duplicate value! Tree unchanged.")
         }
-
-        appended.depth = parent.depth + 1
-        appended.height = 0
+        // appended.depth = parent.depth + 1
+        // appended.height = 0
     } else {
         this.root = appended
+
+        this.root.height = 0
     }
 }

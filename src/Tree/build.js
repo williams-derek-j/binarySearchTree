@@ -8,7 +8,7 @@ export default function build(array, parent) {
 
             parent.left = node
 
-            node.height = 0
+            parent.left.height = 0
             // if (parent.right === null) {
             //     parent.height = parent.height + 1
             // }
@@ -18,7 +18,7 @@ export default function build(array, parent) {
 
             parent.right = node
 
-            node.height = 0
+            parent.right.height = 0
             // if (parent.left === null) {
             //     parent.height = parent.height + 1
             // }
@@ -32,13 +32,13 @@ export default function build(array, parent) {
             node.depth = parent._depth + 1;
 
             parent.left = node
-            node.height = 0
+            parent.left.height = 0
 
             node = new Node(array[1]);
             node.depth = parent._depth + 1;
 
             parent.right = node
-            node.height = 0
+            parent.right.height = 0
 
             // parent.height = parent.height + 1
 
@@ -47,13 +47,13 @@ export default function build(array, parent) {
             node.depth = parent._depth + 1;
 
             parent.left = node
-            node.height = 0
+            parent.left.height = 0
 
             node = new Node(array[0]);
             node.depth = parent._depth + 1;
 
             parent.right = node
-            node.height = 0
+            parent.right.height = 0
 
             // parent.height = parent.height + 1
 
@@ -63,7 +63,7 @@ export default function build(array, parent) {
                 node.depth = parent._depth + 1;
 
                 parent.left = node
-                node.height = 0
+                parent.left.height = 0
 
                 // parent.height = parent.height + 1
 
@@ -74,7 +74,7 @@ export default function build(array, parent) {
                 node.depth = parent._depth + 1;
 
                 parent.right = node
-                node.height = 0
+                parent.right.height = 0
 
                 // parent.height = parent.height + 1
 
@@ -92,7 +92,7 @@ export default function build(array, parent) {
                 node.depth = parent._depth + 1;
 
                 parent.left = node
-                node.height = 0
+                parent.left.height = 0
 
                 // parent.height = parent.height + 1
 
@@ -103,7 +103,7 @@ export default function build(array, parent) {
                 node.depth = parent._depth + 1;
 
                 parent.right = node
-                node.height = 0
+                parent.right.height = 0
 
                 // parent.height = parent.height + 1
 
@@ -126,7 +126,7 @@ export default function build(array, parent) {
             node.depth = parent._depth + 1
 
             parent.left = node;
-            node.height = 0
+            parent.left.height = 0
 
             // if (parent.right === null) {
             //     parent.height = parent.height + 1
@@ -140,7 +140,7 @@ export default function build(array, parent) {
             node.depth = parent._depth + 1;
 
             parent.right = node
-            node.height = 0
+            parent.right.height = 0
 
             // if (parent.left === null) {
             //     parent.height = parent.height + 1

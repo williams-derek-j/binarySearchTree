@@ -113,7 +113,7 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
         if (found.length === 2) {
             let movedParent = found[1]
 
-            moved.height = 0 // send event up chain and force parent+ to compare updated heights of children
+            moved.height = -1  // send event up chain and force parent+ to compare updated heights of children
 
             for (let prop in movedParent) { // delete moved node
                 if (movedParent[prop] === moved) {
