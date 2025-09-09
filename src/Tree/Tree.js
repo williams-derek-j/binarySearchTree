@@ -1,5 +1,6 @@
 import Node from "../Node"
 import build from "../Tree/build"
+import { buildB } from "../Tree/build"
 import append from "../Tree/append"
 import insert from "../Tree/insert"
 import remove from "../Tree/remove"
@@ -20,11 +21,13 @@ export default class Tree {
 
         array = sort(array)
 
-        const midpoint = Math.round(array.length / 2) - 1
-        this.root = new Node(array[midpoint])
+        this.root = buildB([array], [])
 
-        this.build(array.slice(0, midpoint), this.root) // build left side
-        this.build(array.slice(midpoint + 1), this.root) // build right side
+        // const midpoint = Math.round(array.length / 2) - 1
+        // this.root = new Node(array[midpoint])
+        //
+        // this.build(array.slice(0, midpoint), this.root) // build left side
+        // this.build(array.slice(midpoint + 1), this.root) // build right side
     }
 
 //     isBalanced(node) {

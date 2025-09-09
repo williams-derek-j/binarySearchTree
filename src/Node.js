@@ -126,7 +126,7 @@ export default class Node {
     rebuild(child) {
         console.log('rebuild', 'this:', this, ' child:', child)
         this.rebuildingChild = true
-        this.balanceChildren = false
+        // this.balanceChildren = false
 
         const family = []
         const deprecated = []
