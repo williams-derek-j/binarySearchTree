@@ -65,6 +65,7 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
 
     if (checkDuplicates === true) {
         found = this.find(value, true, node)
+        console.log(found)
     }
 
     const inserted = new Node(value)
@@ -95,18 +96,23 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
     }
 
     if (found !== null) { // find() returns null if it finds nothing
+        console.log('hey')
         let moved = found[0] // moved is a duplicate of inserted value higher in the tree -- copy its children to append to inserted node at lower depth
 
-        moved.height = -1  // send event up chain and force parent+ to compare updated heights of children
-
         if (found.length === 2) {
+            console.log('hey2')
             let movedParent = found[1]
 
             for (let prop in movedParent) { // delete moved node
                 if (movedParent[prop] === moved) {
                     movedParent[prop] = null
+
+                    if (moved.eventsP) {
+                        moved.eventsP = null
+                    }
                 }
             }
+            movedParent.updateHeight()
         }
 
         let orphans = []
@@ -116,20 +122,19 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
                 orphans.push(node.value)
 
                 if (node.left) { // remove nodes of orphans we are re-inserting
-                    node.left = null
+                    setTimeout(node.left = null,0)
                 }
                 if (node.right) {
-                    node.right = null
+                    setTimeout(node.right = null,0)
                 }
             }, 'inorder', moved.left)
 
-            orphans.forEach((orphan) => {
-                this.insert(orphan, inserted, false)
-            })
-
-            orphans = []
+            // orphans.forEach((orphan) => {
+            //     this.insert(orphan, inserted, false)
+            // })
+            //
+            // orphans = []
         }
-
         if (moved.right !== null) {
             this.traverse((node) => {
                 orphans.push(node.value)
@@ -142,9 +147,12 @@ export default function insert(value, node = this.root, checkDuplicates = true) 
                 }
             }, 'inorder', moved.right)
 
-            orphans.forEach((orphan) => {
-                this.insert(orphan, inserted, false)
-            })
+            // orphans.forEach((orphan) => {
+            //     this.insert(orphan, inserted, false)
+            // })
         }
+        orphans.forEach((orphan) => {
+            this.insert(orphan, inserted, false)
+        })
     }
 }

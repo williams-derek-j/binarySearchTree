@@ -152,10 +152,13 @@ export default class Node {
 
         // console.log('family', family, '\n this: ', this)
         const rebuilt = buildB([family])
+        console.log('rbh', rebuilt.height, 'rbhd', rebuilt.depth, '\n\nrbv', rebuilt.value)
 
         for (let prop in this) {
             if (this[prop] === child) {
                 this[prop] = rebuilt
+
+                // rebuilt.depth = this[prop].depth + 1
             }
         }
         // console.log('thiasdasdasds', this, this.left.height, this.right.height)
@@ -174,7 +177,7 @@ export default class Node {
             node.eventsP = this.events
 
             this.events.on('childIsUnbalanced', (child) => {
-                // console.log('emit c', child)
+                console.log('emit c', child)
                 this.rebuild(child)
             })
 
@@ -254,7 +257,7 @@ export default class Node {
             node.eventsP = this.events
 
             this.events.on('childIsUnbalanced', (child) => {
-                // console.log('emit c', child)
+                console.log('emit c', child)
                 this.rebuild(child)
             })
 
