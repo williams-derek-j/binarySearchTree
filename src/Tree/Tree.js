@@ -19,9 +19,9 @@ export default class Tree {
         this.traverse = traverse.bind(this)
         this.print = print.bind(this)
 
-        array = sort(array)
+        array = [sort(array)] //  buildB needs an array of arrays
 
-        this.root = buildB([array], [])
+        this.root = buildB(array)
 
         // const midpoint = Math.round(array.length / 2) - 1
         // this.root = new Node(array[midpoint])

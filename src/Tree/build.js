@@ -1,6 +1,7 @@
 import Node from "../Node";
 
-export function buildB(arrays, parents) {
+export function buildB(arrays, parents = []) {
+    // console.log('buildB', arrays, '\n\n parents:', parents)
     if (parents.length === 0) {
         if (arrays.length === 0) {
             return
@@ -26,6 +27,7 @@ export function buildB(arrays, parents) {
                     const node = new Node(arrays[j][midpoint])
 
                     if (j === i * 2) {
+                         // console.log('pleft', node, parents[i])
                         parents[i].left = node
                     } else if (j - 1 === i * 2) {
                         parents[i].right = node

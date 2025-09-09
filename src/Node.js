@@ -1,4 +1,5 @@
 import build from "./Tree/build"
+import { buildB } from "./Tree/build"
 import traverse from "./Tree/traverse"
 
 export default class Node {
@@ -124,18 +125,18 @@ export default class Node {
     }
 
     rebuild(child) {
-        console.log('rebuild', 'this:', this, ' child:', child)
+        // console.log('rebuild', 'this:', this.value, this, '\n child:', child.value, child)
         this.rebuildingChild = true
         // this.balanceChildren = false
 
         const family = []
         const deprecated = []
 
-        console.log('VVVVVVVVVVVVVVVVVVVVV')
-        traverse(console.log, 'inorder', child)
+        // console.log('VVVVVVVVVVVVVVVVVVVVV')
+        // traverse(console.log, 'inorder', child)
 
         traverse((node) => {
-            console.log('node:', node.value)
+            // console.log('node:', node.value)
             family.push(node.value)
             deprecated.push(node)
         }, 'inorder', child)
@@ -149,8 +150,15 @@ export default class Node {
             }
         })
 
-        console.log('family', family)
-        build(family, this)
+        // console.log('family', family, '\n this: ', this)
+        const rebuilt = buildB([family])
+
+        for (let prop in this) {
+            if (this[prop] === child) {
+                this[prop] = rebuilt
+            }
+        }
+        // console.log('thiasdasdasds', this, this.left.height, this.right.height)
 
         this.rebuildingChild = false
         this.updateHeight()
@@ -166,7 +174,7 @@ export default class Node {
             node.eventsP = this.events
 
             this.events.on('childIsUnbalanced', (child) => {
-                console.log('emit c', child)
+                // console.log('emit c', child)
                 this.rebuild(child)
             })
 
@@ -190,13 +198,15 @@ export default class Node {
                 if (l < r) {
                     if ((r - l) > 1 && this.balanceChildren === true) {
                         if (this.eventsP) {
+                            // console.log('emit p', this, [l, r], this.left, this.right)
                             this.eventsP.emit('childIsUnbalanced', this)
                             return // don't update height, call an event asking parent to rebuild node instead
                         }
                     }
-                } else if (r < l  && this.balanceChildren) {
+                } else if (r < l  && this.balanceChildren === true) {
                     if ((l - r) > 1) {
                         if (this.eventsP) {
+                            // console.log('emit p', this, [l, r])
                             this.eventsP.emit('childIsUnbalanced', this)
                             return // don't update height, call an event asking parent to rebuild node instead
                         }
@@ -244,7 +254,7 @@ export default class Node {
             node.eventsP = this.events
 
             this.events.on('childIsUnbalanced', (child) => {
-                console.log('emit c', child)
+                // console.log('emit c', child)
                 this.rebuild(child)
             })
 
@@ -268,6 +278,7 @@ export default class Node {
                 if (l < r) {
                     if ((r - l) > 1) {
                         if (this.eventsP) {
+                            // console.log('emit p', this, [l, r])
                             this.eventsP.emit('childIsUnbalanced', this)
                             return // don't update height, call an event asking parent to rebuild node instead
                         }
@@ -275,6 +286,7 @@ export default class Node {
                 } else if (r < l) {
                     if ((l - r) > 1) {
                         if (this.eventsP) {
+                            // console.log('emit p', this, [l, r])
                             this.eventsP.emit('childIsUnbalanced', this)
                             return // don't update height, call an event asking parent to rebuild node instead
                         }
