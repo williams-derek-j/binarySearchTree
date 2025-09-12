@@ -1,3 +1,9 @@
+export function findChildless(node, childless = []) {
+    if (node.left === null && node.right === null) {
+        childless.push(node)
+    }
+}
+
 export default function find(value, wantsParent = false, prev = this.root, shallow = false, curr = null) {
     if (prev === null) {
         prev = this.root

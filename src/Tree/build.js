@@ -1,4 +1,85 @@
 import Node from "../Node";
+import traverse from "./traverse"
+
+export function init(arrays, parents = []) {
+    if (parents.length === 0) {
+        if (arrays.length === 0) {
+            return
+        }
+        const midpoint = Math.round(arrays[0].length / 2) - 1
+        const root = new Node(arrays[0][midpoint])
+
+        const splits = []
+        splits.push(arrays[0].slice(0, midpoint))
+        splits.push(arrays[0].slice(midpoint + 1))
+
+        init(splits, [root])
+
+        // find deepest childless nodes here
+        const childless = []
+        traverse((node) => {
+            if (node.left === null & node.right === null) {
+                childless.push(node)
+            }
+        },'inorder', root)
+
+        childless.forEach((child) => {
+            child.height = 0
+        })
+
+        return root
+    } else {
+        const children = []
+        const splits = []
+
+        for (let i = 0; i < parents.length; i++) { // for each parent from deeper tier,
+            for (let j = i * 2; j < ((i * 2) + 2); j++) { // grab two arrays. arrays[j = 2i], arrays[j + 1]
+                if (arrays[j].length > 1) {
+                    const midpoint = Math.round(arrays[j].length / 2) - 1
+                    const node = new Node(arrays[j][midpoint])
+
+                    if (j === i * 2) {
+                        parents[i].left = node
+                    } else if (j - 1 === i * 2) {
+                        parents[i].right = node
+                    } else {
+                        console.log("!")
+                    }
+                    node.depth = parents[i].depth + 1
+                    // don't set height yet! find the deepest childless nodes and pass their heights up once the tree is fully built
+
+                    children.push(node) // this is a queue -- each parent creates usually 2 children
+
+                    if (arrays[j].length >= 3) {
+                        splits.push(arrays[j].slice(0, midpoint))
+                        splits.push(arrays[j].slice(midpoint + 1))
+                    } else if (arrays[j].length === 2) {
+                        splits.push([])
+                        splits.push([arrays[j][1]])
+                    } else {
+                        splits.push([])
+                        splits.push([])
+                    }
+                } else if (arrays[j].length === 1) {
+                    const node = new Node(arrays[j][0])
+
+                    if (j === i * 2) {
+                        parents[i].left = node
+                    } else if (j - 1 === i * 2) {
+                        parents[i].right = node
+                    }
+                    node.depth = parents[i].depth + 1
+                    // don't set height yet! find the deepest childless nodes and pass their heights up once the tree is fully built
+
+                    children.push(node)
+                    splits.push([])
+                    splits.push([])
+                }
+            }
+        }
+        return buildB(splits, children)
+    }
+}
 
 export function buildB(arrays, parents = []) {
     // console.log('buildB', arrays, '\n\n parents:', parents)

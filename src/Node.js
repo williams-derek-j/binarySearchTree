@@ -66,12 +66,14 @@ export default class Node {
     }
 
     set height(value) {
+        // console.log('sh', this.value, value)
         if (this.rebuildingChild === true) {
             return
         }
         this._height = value
 
         if (this.eventsP) {
+            console.log('emit to P', value, this.value)
             this.eventsP.emit('childHeightChange')
         } else {
             // console.log(new Error("Node couldn't emit change event to parent, is node root? If not, something went wrong!"))
@@ -89,7 +91,7 @@ export default class Node {
         if (this.left) {
             l = this.left.height
         } else {
-            l = -1 // = null
+            l = -1 // = null, if set to zero a subtree can mistakenly be built with two nodes on left child and zero on right child
         }
         if (this.right) {
             r = this.right.height
@@ -124,10 +126,15 @@ export default class Node {
         }
     }
 
+    isBalanced() {
+        [l, r] = this.heightChildren()
+
+        return Math.sqrt((l - r) ** 2) > 1;
+    }
+
     rebuild(child) {
         // console.log('rebuild', 'this:', this.value, this, '\n child:', child.value, child)
         this.rebuildingChild = true
-        // this.balanceChildren = false
 
         const family = []
         const deprecated = []
@@ -165,7 +172,6 @@ export default class Node {
 
         this.rebuildingChild = false
         this.updateHeight()
-        this.balanceChildren = true
     }
 
     set left(node) {
@@ -177,39 +183,26 @@ export default class Node {
             node.eventsP = this.events
 
             this.events.on('childIsUnbalanced', (child) => {
-                console.log('emit c', child)
+                console.log('emit p', 'child:', child.value, '\nP:', this.value)
                 this.rebuild(child)
             })
 
             this.events.on('childHeightChange', () => {
-                // let l = 0
-                // let r = 0
-                //
-                // if (this.left) {
-                //     l = this.left.height
-                // } else {
-                //     l = -1 // = null
-                // }
-                // if (this.right) {
-                //     r = this.right.height
-                // } else {
-                //     r = -1
-                // }
                 const [l, r] = this.heightChildren()
                 // console.log(this.value, l, r)
 
                 if (l < r) {
-                    if ((r - l) > 1 && this.balanceChildren === true) {
+                    if ((r - l) > 1) {
                         if (this.eventsP) {
-                            // console.log('emit p', this, [l, r], this.left, this.right)
+                            // console.log('emit c', this.value, [l, r], this.left.value, this.right.value)
                             this.eventsP.emit('childIsUnbalanced', this)
                             return // don't update height, call an event asking parent to rebuild node instead
                         }
                     }
-                } else if (r < l  && this.balanceChildren === true) {
+                } else if (r < l) {
                     if ((l - r) > 1) {
                         if (this.eventsP) {
-                            // console.log('emit p', this, [l, r])
+                            // console.log('emit c', this.value, [l, r], this.left.value, this.right.value)
                             this.eventsP.emit('childIsUnbalanced', this)
                             return // don't update height, call an event asking parent to rebuild node instead
                         }
@@ -217,24 +210,6 @@ export default class Node {
                 }
 
                 this.updateHeight(l, r)
-
-                // if (this.height <= l || this.height <= r) {
-                //     if (l < r) {
-                //         this.height = 1 + r
-                //     } else { // l > r or l == r
-                //         this.height = 1 + l
-                //     }
-                // } else {
-                //     if (l < r) {
-                //         if (this.height - r >= 2) {
-                //             this.height = r + 1
-                //         }
-                //     } else { // l > r or l == r
-                //         if (this.height - l >= 2) {
-                //             this.height = l + 1
-                //         }
-                //     }
-                // }
             })
             this._left = node
         } else {
@@ -257,31 +232,17 @@ export default class Node {
             node.eventsP = this.events
 
             this.events.on('childIsUnbalanced', (child) => {
-                console.log('emit c', child)
+                console.log('emit p', 'child:', child.value, '\nP:', this.value)
                 this.rebuild(child)
             })
 
             this.events.on('childHeightChange', () => {
-                // let l = 0
-                // let r = 0
-                //
-                // if (this.left) {
-                //     l = this.left.height
-                // } else {
-                //     l = -1 // = null
-                // }
-                // if (this.right) {
-                //     r = this.right.height
-                // } else {
-                //     r = -1
-                // }
                 const [l, r] = this.heightChildren()
                 // console.log(this.value, l, r)
 
                 if (l < r) {
                     if ((r - l) > 1) {
                         if (this.eventsP) {
-                            // console.log('emit p', this, [l, r])
                             this.eventsP.emit('childIsUnbalanced', this)
                             return // don't update height, call an event asking parent to rebuild node instead
                         }
@@ -289,7 +250,6 @@ export default class Node {
                 } else if (r < l) {
                     if ((l - r) > 1) {
                         if (this.eventsP) {
-                            // console.log('emit p', this, [l, r])
                             this.eventsP.emit('childIsUnbalanced', this)
                             return // don't update height, call an event asking parent to rebuild node instead
                         }
@@ -297,24 +257,6 @@ export default class Node {
                 }
 
                 this.updateHeight(l, r)
-
-                // if (this.height <= l || this.height <= r) {
-                //     if (l < r) {
-                //         this.height = 1 + r
-                //     } else {
-                //         this.height = 1 + l
-                //     }
-                // } else {
-                //     if (l < r) {
-                //         if (this.height - r >= 2) {
-                //             this.height = r + 1
-                //         }
-                //     } else {
-                //         if (this.height - l >= 2) {
-                //             this.height = l + 1
-                //         }
-                //     }
-                // }
             })
             this._right = node
         } else {
