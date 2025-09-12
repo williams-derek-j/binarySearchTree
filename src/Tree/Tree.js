@@ -3,7 +3,6 @@ import build from "../Tree/build"
 import { buildB } from "../Tree/build"
 import { init } from "../Tree/build"
 import append from "../Tree/append"
-import insert from "../Tree/insert"
 import remove from "../Tree/remove"
 import find from "../Tree/find"
 import traverse from "../Tree/traverse"
@@ -14,7 +13,6 @@ export default class Tree {
     constructor(array) {
         this.build = build
         this.append = append.bind(this)
-        this.insert = insert.bind(this)
         this.remove = remove.bind(this)
         this.find = find.bind(this)
         this.traverse = traverse.bind(this)

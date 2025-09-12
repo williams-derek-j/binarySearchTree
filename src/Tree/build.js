@@ -18,11 +18,12 @@ export function init(arrays, parents = []) {
         // find deepest childless nodes here
         const childless = []
         traverse((node) => {
-            if (node.left === null & node.right === null) {
+            if (node.left === null && node.right === null) {
                 childless.push(node)
             }
         },'inorder', root)
 
+        console.log('chidless', childless)
         childless.forEach((child) => {
             child.height = 0
         })
@@ -77,7 +78,7 @@ export function init(arrays, parents = []) {
                 }
             }
         }
-        return buildB(splits, children)
+        return init(splits, children)
     }
 }
 

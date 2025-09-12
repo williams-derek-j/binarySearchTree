@@ -30,6 +30,7 @@ export default function append(value, node = this.root) {
             if (value < parent.value) {
                 appended.depth = parent.depth + 1
 
+                // appended.height = 0
                 parent.left = appended
                 parent.left.height = 0
 
@@ -39,6 +40,7 @@ export default function append(value, node = this.root) {
             } else {
                 appended.depth = parent.depth + 1
 
+                // appended.height = 0
                 parent.right = appended
                 parent.right.height = 0
 
