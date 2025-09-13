@@ -1,6 +1,7 @@
 import Node from "../Node";
 import traverse from "./traverse"
 
+// chatGPT wrote this algorithm -- shifting binary is still beyond me atm
 function generateGray(bit) {
     const total = 1 << bit;
     const out = [];
@@ -15,6 +16,7 @@ function generateGray(bit) {
     }
     return out;
 }
+//
 
 function grayPairs(array, grays = []) {
     if (array.length <= 2) {
@@ -75,28 +77,6 @@ export function init(arrays, parents = []) {
             }
         })
 
-        // const childlessRight = []
-        // traverse((node) => {
-        //     if (node.left === null && node.right === null) {
-        //         childlessRight.push(node)
-        //     }
-        // },'inorder', root.right)
-        //
-        // let len
-        // if (childlessLeft.length <= childlessRight.length) {
-        //     len = childlessRight.length
-        // } else {
-        //     len = childlessLeft.length
-        // }
-        // console.log(childlessLeft, childlessRight)
-        // for (let i = 0; i < len; i++) {
-        //     if (childlessLeft[i]) {
-        //         childlessLeft[i].height = 0
-        //     }
-        //     if (childlessRight[i]) {
-        //         childlessRight[i].height = 0
-        //     }
-        // }
 
         return root
     } else {
@@ -108,6 +88,7 @@ export function init(arrays, parents = []) {
                 if (arrays[j].length > 1) {
                     const midpoint = Math.round(arrays[j].length / 2) - 1
                     const node = new Node(arrays[j][midpoint])
+                    console.log('hey0', node.value)
 
                     if (j === i * 2) {
                         parents[i].left = node
@@ -116,6 +97,7 @@ export function init(arrays, parents = []) {
                     } else {
                         console.log("!")
                     }
+                    console.log('depth', parents[i].value, parents[i].depth)
                     node.depth = parents[i].depth + 1
                     // don't set height yet! find the deepest childless nodes and pass their heights up once the tree is fully built
 
@@ -133,12 +115,14 @@ export function init(arrays, parents = []) {
                     }
                 } else if (arrays[j].length === 1) {
                     const node = new Node(arrays[j][0])
+                    console.log('hey', node.value)
 
                     if (j === i * 2) {
                         parents[i].left = node
                     } else if (j - 1 === i * 2) {
                         parents[i].right = node
                     }
+                    console.log('depth', parents[i].value, parents[i].depth)
                     node.depth = parents[i].depth + 1
                     // don't set height yet! find the deepest childless nodes and pass their heights up once the tree is fully built
 

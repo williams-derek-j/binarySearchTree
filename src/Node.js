@@ -105,7 +105,7 @@ export default class Node {
     }
 
     updateHeight(l = null, r = null) {
-        console.log('updateHeight', 'this:', this.value, this, '\n\n l, r', l, r)
+        console.log('updateHeight', 'this:', this.value, this, '\n l, r', l, r)
         if (l === null || r === null) {
             [l, r] = this.heightChildren()
         }
@@ -171,7 +171,7 @@ export default class Node {
             if (this[prop] === child) {
                 this[prop] = rebuilt
 
-                // rebuilt.depth = this[prop].depth + 1
+                rebuilt.depth = this.depth + 1
             }
         }
 
