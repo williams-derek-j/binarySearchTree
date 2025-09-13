@@ -55,7 +55,12 @@ export function init(arrays, parents = []) {
         },'inorder', root)
 
         console.log('childless:', childless)
-        const bit = Math.log(childless.length) / Math.log(2)
+        let bit = Math.log(childless.length) / Math.log(2)
+
+        while (!Number.isInteger(bit)) {
+            childless.push(new Node('dummy'))
+            bit = Math.log(childless.length) / Math.log(2)
+        }
 
         const gray = generateGray(bit)
 
