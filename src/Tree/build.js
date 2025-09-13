@@ -54,7 +54,7 @@ export function init(arrays, parents = []) {
             }
         },'inorder', root)
 
-        console.log(childless)
+        console.log('childless:', childless)
         const bit = Math.log(childless.length) / Math.log(2)
 
         const gray = generateGray(bit)
@@ -88,7 +88,6 @@ export function init(arrays, parents = []) {
                 if (arrays[j].length > 1) {
                     const midpoint = Math.round(arrays[j].length / 2) - 1
                     const node = new Node(arrays[j][midpoint])
-                    console.log('hey0', node.value)
 
                     if (j === i * 2) {
                         parents[i].left = node
@@ -97,7 +96,6 @@ export function init(arrays, parents = []) {
                     } else {
                         console.log("!")
                     }
-                    console.log('depth', parents[i].value, parents[i].depth)
                     node.depth = parents[i].depth + 1
                     // don't set height yet! find the deepest childless nodes and pass their heights up once the tree is fully built
 
@@ -115,14 +113,12 @@ export function init(arrays, parents = []) {
                     }
                 } else if (arrays[j].length === 1) {
                     const node = new Node(arrays[j][0])
-                    console.log('hey', node.value)
 
                     if (j === i * 2) {
                         parents[i].left = node
                     } else if (j - 1 === i * 2) {
                         parents[i].right = node
                     }
-                    console.log('depth', parents[i].value, parents[i].depth)
                     node.depth = parents[i].depth + 1
                     // don't set height yet! find the deepest childless nodes and pass their heights up once the tree is fully built
 
@@ -163,7 +159,6 @@ export function buildB(arrays, parents = []) {
                     const node = new Node(arrays[j][midpoint])
 
                     if (j === i * 2) {
-                         // console.log('pleft', node, parents[i])
                         parents[i].left = node
                     } else if (j - 1 === i * 2) {
                         parents[i].right = node
@@ -336,17 +331,14 @@ export default function build(array, parent) {
 
     } else if (array.length >= 3) {
         const midpoint = Math.round(array.length / 2) - 1
-        console.log('mp', midpoint, array[midpoint])
 
         if (array[midpoint] < parent.value) {
             const node = new Node(array[midpoint])
             node.depth = parent._depth + 1
 
-            console.log('pl', parent, node, array, parent.left)
             parent.left = node;
             node.height = 0
             // parent.left.height = 0
-            console.log('pl2', parent.left)
 
             // if (parent.right === null) {
             //     parent.height = parent.height + 1

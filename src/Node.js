@@ -67,7 +67,6 @@ export default class Node {
     }
 
     set height(value) {
-        // console.log('sh', this.value, value)
         if (this.rebuildingChild === true) {
             return
         }
@@ -145,7 +144,6 @@ export default class Node {
         const deprecated = []
 
         traverse((node) => {
-            // console.log('node:', node.value)
             family.push(node.value)
             deprecated.push(node)
         }, 'inorder', child)

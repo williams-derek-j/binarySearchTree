@@ -17,7 +17,7 @@ function generateGray(n) {
 
 let gray = generateGray(5);
 console.log(gray)
-let result
+
 const test = new Tree([1,3,4,5,6,6.1,6.25,6.4,6.5,6.6,7,10,13,14,15,16,17,18,19,18.5])
 test.print(test.root)
 console.log('root', test.root)
