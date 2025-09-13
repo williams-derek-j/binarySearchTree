@@ -1,20 +1,39 @@
 import Tree from './Tree/Tree'
 
+function generateGray(n) {
+    const total = 1 << n;
+    const out = [];
+    for (let i = 0; i < total; i++) {
+        // binary-reflected Gray code
+        const g = i ^ (i >> 1);
+        // convert to n-bit binary string
+        let bits = g.toString(2).padStart(n, '0');
+        // reverse the bit order
+        bits = bits.split('').reverse().join('');
+        out.push(bits);
+    }
+    return out;
+}
+
+let gray = generateGray(5);
+console.log(gray)
 let result
 const test = new Tree([1,3,4,5,6,6.1,6.25,6.4,6.5,6.6,7,10,13,14,15,16,17,18,19,18.5])
 test.print(test.root)
 console.log('root', test.root)
 console.log('find 13', test.find(13))
 console.log('find 15', test.find(15))
+console.log('find 6', test.find(6))
 console.log('root', test.root)
 test.print(test.root)
-console.log('append 0')
-test.append(0)
-test.print(test.root)
-console.log('append -1')
-test.append(-1)
-test.print(test.root)
-console.log('root', test.root)
+// console.log('append 0')
+// test.append(0)
+// test.print(test.root)
+// console.log('append -1')
+// test.append(-1)
+// test.print(test.root)
+// console.log('root', test.root)
+// console.log('root', test.root)
 // console.log('find 1', test.find(1))
 // console.log('append 3')
 // test.append(3)
@@ -36,7 +55,9 @@ console.log('root', test.root)
 // console.log('append 6.359')
 // test.append(6.359)
 // test.print(test.root)
-// console.log('append <6.4')
+// console.log('-----------------------------------------find', test.find(6.369))
+// console.log('root', test.root)
+// console.log('append 6.349')
 // test.append(6.349)
 // test.print(test.root)
 // // test.print(test.root)
@@ -56,7 +77,7 @@ console.log('root', test.root)
 // // test.print(test.root)
 // console.log('append 8.01')
 // test.append(8.01)
-// // test.print(test.root)
+// test.print(test.root)
 // console.log('append 8.11')
 // test.append(8.11)
 // // test.print(test.root)

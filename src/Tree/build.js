@@ -1,6 +1,35 @@
 import Node from "../Node";
 import traverse from "./traverse"
 
+function generateGray(bit) {
+    const total = 1 << bit;
+    const out = [];
+    for (let i = 0; i < total; i++) {
+        // binary-reflected Gray code
+        const g = i ^ (i >> 1);
+        // convert to n-bit binary string
+        let bits = g.toString(2).padStart(bit, '0');
+        // reverse the bit order
+        bits = bits.split('').reverse().join('');
+        out.push(bits);
+    }
+    return out;
+}
+
+function grayPairs(array, grays = []) {
+    if (array.length <= 2) {
+        return array
+    } else {
+        const left = grayPairs(array.slice(0, array.length/2))
+        const right = grayPairs(array.slice(array.length/2))
+
+        grays.push(left)
+        grays.push(right)
+
+        return grays
+    }
+}
+
 export function init(arrays, parents = []) {
     if (parents.length === 0) {
         if (arrays.length === 0) {
@@ -16,17 +45,58 @@ export function init(arrays, parents = []) {
         init(splits, [root])
 
         // find deepest childless nodes here
-        const childless = []
+        let childless = []
         traverse((node) => {
             if (node.left === null && node.right === null) {
                 childless.push(node)
             }
         },'inorder', root)
 
-        console.log('chidless', childless)
-        childless.forEach((child) => {
-            child.height = 0
+        console.log(childless)
+        const bit = Math.log(childless.length) / Math.log(2)
+
+        const gray = generateGray(bit)
+
+        childless = grayPairs(childless)
+
+        let str = 'childless'
+        for (let i = 0; i < bit; i++) {
+            str += `[x]`
+        }
+        gray.forEach((binary) => {
+            for (let i = 0; i < bit; i++) {
+                str = str.replace("x", binary[i])
+            }
+            eval(str).height = 0
+
+            str = 'childless'
+            for (let i = 0; i < bit; i++) {
+                str += `[x]`
+            }
         })
+
+        // const childlessRight = []
+        // traverse((node) => {
+        //     if (node.left === null && node.right === null) {
+        //         childlessRight.push(node)
+        //     }
+        // },'inorder', root.right)
+        //
+        // let len
+        // if (childlessLeft.length <= childlessRight.length) {
+        //     len = childlessRight.length
+        // } else {
+        //     len = childlessLeft.length
+        // }
+        // console.log(childlessLeft, childlessRight)
+        // for (let i = 0; i < len; i++) {
+        //     if (childlessLeft[i]) {
+        //         childlessLeft[i].height = 0
+        //     }
+        //     if (childlessRight[i]) {
+        //         childlessRight[i].height = 0
+        //     }
+        // }
 
         return root
     } else {
