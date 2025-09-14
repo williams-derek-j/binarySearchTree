@@ -3,16 +3,16 @@ import traverse from "./traverse"
 
 // chatGPT wrote this algorithm -- shifting binary is still beyond me atm
 function generateGray(bit) {
-    const total = 1 << bit;
-    const out = [];
+    const total = 1 << bit
+    const out = []
     for (let i = 0; i < total; i++) {
         // binary-reflected Gray code
-        const g = i ^ (i >> 1);
+        const g = i ^ (i >> 1)
         // convert to n-bit binary string
-        let bits = g.toString(2).padStart(bit, '0');
+        let bits = g.toString(2).padStart(bit, '0')
         // reverse the bit order
-        bits = bits.split('').reverse().join('');
-        out.push(bits);
+        bits = bits.split('').reverse().join('')
+        out.push(bits)
     }
     return out;
 }
@@ -46,7 +46,7 @@ export function init(arrays, parents = []) {
 
         init(splits, [root])
 
-        // find deepest childless nodes here
+        // find deepest childless nodes here -- this is really cool and educational but obviously doesn't work lmao. Setting the height of any childless node will of course force the tree to rebalance. You must propagate heights upward, doubling back each layer to update the height of parent. AFAIK there is not a more efficient way of doing this.
         let childless = []
         traverse((node) => {
             if (node.left === null && node.right === null) {
@@ -65,6 +65,7 @@ export function init(arrays, parents = []) {
         const gray = generateGray(bit)
 
         childless = grayPairs(childless)
+        console.log('grayChildless', childless)
 
         let str = 'childless'
         for (let i = 0; i < bit; i++) {
@@ -81,7 +82,6 @@ export function init(arrays, parents = []) {
                 str += `[x]`
             }
         })
-
 
         return root
     } else {
@@ -170,10 +170,10 @@ export function buildB(arrays, parents = []) {
                     } else {
                         console.log("!")
                     }
-                    node.depth = parents[i].depth + 1
+                    node.depth = parents[i].depth + 1 // following is wrong I think, no parents array is passed in so this isn't reached: when buildB is called from remove(), depth is set twice but final result is nonetheless correct -- just extra instructions that ideally would merit a flag to skip this if coming from remove()
                     node.height = 0
 
-                    children.push(node) // each parent creates usually 2 children
+                    children.push(node) // this is a queue -- each parent creates usually 2 children
 
                     if (arrays[j].length >= 3) {
                         splits.push(arrays[j].slice(0, midpoint))

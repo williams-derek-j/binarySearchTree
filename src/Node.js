@@ -162,7 +162,7 @@ export default class Node {
         })
 
         console.log('family', family, '\n this: ', this)
-        const rebuilt = init([family])
+        const rebuilt = buildB([family])
         console.log('rbh', rebuilt.height, 'rbd', rebuilt.depth, '\n\nrbv', rebuilt.value)
 
         for (let prop in this) {
@@ -182,6 +182,7 @@ export default class Node {
         if (this.left !== null) {
             if (this.left.eventsP) { // prevent removed node from firing events on parent
                 this._left.eventsP = null
+                this._left.events = null
             }
             this._left = null
         }
@@ -230,6 +231,7 @@ export default class Node {
         if (this.right !== null) {
             if (this.right.eventsP) { // prevent removed node from firing events on parent
                 this._right.eventsP = null
+                this._right.events = null
             }
             this._right = null
         }
