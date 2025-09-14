@@ -1,5 +1,5 @@
 import traverse from './traverse'
-import {buildB} from "./build";
+import { buildB } from "./build";
 
 function findMostRight(node) { // rename most right
     if (node.right) {
@@ -68,53 +68,45 @@ export default function remove(value, childrenToo = false, node = null) { // nod
             const family = []
             const deprecated = []
 
-            traverse((node) => {
-                family.push(node.value)
-                deprecated.push(node)
-            }, 'inorder', removed.left)
+            if (removed.left) {
+                traverse((node) => {
+                    family.push(node.value)
+                    deprecated.push(node)
+                }, 'inorder', removed.left)
+            }
 
-            traverse((node) => {
-                family.push(node.value)
-                deprecated.push(node)
-            }, 'inorder', removed.right)
+            if (removed.right) {
+                traverse((node) => {
+                    family.push(node.value)
+                    deprecated.push(node)
+                }, 'inorder', removed.right)
+            }
 
-            deprecated.forEach((node) => {
-                if (node.eventsP) {
-                    console.log('clearing eventsP', node)
-                    node.eventsP = null
-                }
-                if (node.left !== null) {
-                    node._left = null
-                }
-                if (node.right !== null) {
-                    node._right = null
-                }
-            })
+            if (deprecated.length > 0) {
+                deprecated.forEach((node) => {
+                    if (node.eventsP) {
+                        console.log('clearing eventsP', node)
+                        node.eventsP = null
+                    }
+                    if (node.left !== null) {
+                        node._left = null
+                    }
+                    if (node.right !== null) {
+                        node._right = null
+                    }
+                })
+            }
 
-            // console.log('family', family, '\n this: ', this)
-            const rebuilt = buildB([family])
-            // console.log('rbh', rebuilt.height, 'rbd', rebuilt.depth, '\n\nrbv', rebuilt.value)
+            if (family.length > 0) {
+                // console.log('family', family, '\n this: ', this)
+                const rebuilt = buildB([family])
+                // console.log('rbh', rebuilt.height, 'rbd', rebuilt.depth, '\n\nrbv', rebuilt.value)
 
-            this.root = rebuilt
-            rebuilt.depth = 0
-
-            // if (node.left) {
-            //     if (node.right) {
-            //         const mostRight = findMostRight(node.left)
-            //         mostRight.right = node.right
-            //
-            //         node.right = null
-            //     }
-            //     this.root = node.left
-            //
-            //     node.left = null
-            // } else if (node.right) {
-            //     this.root = node.right
-            //
-            //     node.right = null
-            // } else {
-            //     this.root = null
-            // }
+                this.root = rebuilt
+                rebuilt.depth = 0
+            } else { // no children to remove
+                this.root = null
+            }
         } else {
             if (node === null) {
                 node = this.root
@@ -195,45 +187,15 @@ export default function remove(value, childrenToo = false, node = null) { // nod
             }
 
             parent.rebuildingChild = false
-            parent.updateHeight()
 
-            // if (node === parent.left) {
-            //     if (node.left) {
-            //         if (node.right) {
-            //             const mostRight = findMostRight(node.left)
-            //             mostRight.right = node.right
-            //
-            //             node.right = null
-            //         }
-            //         parent.left = node.left
-            //
-            //         node.left = null
-            //     } else if (node.right) {
-            //         parent.left = node.right
-            //
-            //         node.right = null
-            //     } else {
-            //         parent.left = null
-            //     }
-            // } else if (node === parent.right) {
-            //     if (node.left) {
-            //         if (node.right) {
-            //             const mostRight = findMostRight(node.left)
-            //             mostRight.right = node.right
-            //
-            //             node.right = null
-            //         }
-            //         parent.right = node.left
-            //
-            //         node.left = null
-            //     } else if (node.right) {
-            //         parent.right = node.right
-            //
-            //         node.right = null
-            //     } else {
-            //         parent.right = null
-            //     }
-            // }
+            if (!parent.isBalanced()) {
+                console.log('not balanced this.value:', parent.value)
+                if (parent.eventsP) {
+                    parent.eventsP.emit('childIsUnbalanced', parent)
+                }
+            } else {
+                parent.updateHeight()
+            }
         }
     }
 }

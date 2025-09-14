@@ -20,6 +20,6 @@ export default class Tree {
 
         array = [sort(array)] //  buildB needs an array of arrays
 
-        this.root = init(array)
+        this.root = buildB(array)
     }
 }

@@ -100,6 +100,7 @@ export default class Node {
             r = -1
         }
 
+        // console.log(l,r)
         return [l, r]
     }
 
@@ -108,8 +109,9 @@ export default class Node {
         if (l === null || r === null) {
             [l, r] = this.heightChildren()
         }
+        console.log(l,r,this.height)
 
-        if (this._height <= l || this._height <= r) {
+        if (this.height <= l || this.height <= r) {
             if (l < r) {
                 this.height = 1 + r
             } else { // l > r or l == r
@@ -117,11 +119,11 @@ export default class Node {
             }
         } else {
             if (l < r) {
-                if (this._height - r >= 2) {
+                if (this.height - r >= 2) {
                     this.height = r + 1
                 }
             } else { // l > r or l == r
-                if (this._height - l >= 2) {
+                if (this.height - l >= 2) {
                     this.height = l + 1
                 }
             }
