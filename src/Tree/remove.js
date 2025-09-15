@@ -32,7 +32,7 @@ function removeAll(value, node = null, dis) {
             if (found.length === 2) {
                 node = found[0]
                 parent = found[1]
-                console.log('parent,',parent)
+                // console.log('parent,',parent)
 
                 parent.rebuildingChild = true
 
@@ -56,7 +56,7 @@ function removeAll(value, node = null, dis) {
                 parent.rebuildingChild = true
 
                 if (!parent.isBalanced()) {
-                    console.log('not balanced this.value:', parent.value)
+                    // console.log('not balanced this.value:', parent.value)
                     if (parent.eventsP) {
                         parent.eventsP.emit('childIsUnbalanced', parent)
                     } else {
@@ -125,7 +125,7 @@ export default function remove(value, childrenToo = false, node = null) { // nod
             if (deprecated.length > 0) {
                 deprecated.forEach((node) => {
                     if (node.eventsP) {
-                        console.log('clearing eventsP', node)
+                        // console.log('clearing eventsP', node)
                         node.eventsP = null
                     }
                     if (node.left !== null) {
@@ -188,7 +188,7 @@ export default function remove(value, childrenToo = false, node = null) { // nod
             if (deprecated.length > 0) {
                 deprecated.forEach((node) => {
                     if (node.eventsP) {
-                        console.log('clearing eventsP', node)
+                        // console.log('clearing eventsP', node)
                         node.eventsP = null
                     }
                     if (node.left !== null) {
@@ -229,7 +229,7 @@ export default function remove(value, childrenToo = false, node = null) { // nod
             parent.rebuildingChild = false
 
             if (!parent.isBalanced()) {
-                console.log('not balanced this.value:', parent.value)
+                // console.log('not balanced this.value:', parent.value)
                 if (parent.eventsP) {
                     parent.eventsP.emit('childIsUnbalanced', parent)
                 }

@@ -1,23 +1,5 @@
 import Tree from './Tree/Tree'
 
-function generateGray(n) {
-    const total = 1 << n;
-    const out = [];
-    for (let i = 0; i < total; i++) {
-        // binary-reflected Gray code
-        const g = i ^ (i >> 1);
-        // convert to n-bit binary string
-        let bits = g.toString(2).padStart(n, '0');
-        // reverse the bit order
-        bits = bits.split('').reverse().join('');
-        out.push(bits);
-    }
-    return out;
-}
-
-let gray = generateGray(5);
-console.log(gray)
-
 const test = new Tree([1,3,4,5,6,6.1,6.25,6.4,6.5,6.6,7,10,13,14,15,16,17,18,19,18.5,16.1,16.2,16.3,16.4,16.5,16.6,16.7,16.8,16.9,16.91,16.92])
 test.print(test.root)
 console.log('root', test.root)
@@ -120,7 +102,7 @@ console.log('remove 15')
 test.remove(15)
 test.print(test.root)
 console.log('root', test.root)
-console.log('remove 6.4')
+console.log('remove 6.4 & children')
 test.remove(6.4, true)
 test.print(test.root)
 console.log('root', test.root)
