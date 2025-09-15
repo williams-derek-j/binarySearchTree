@@ -17,9 +17,11 @@ function removeAll(value, node = null, dis) {
         if (node.left || node.right) {
             if (node.left) {
                 removeAll(node.left.value, node, dis)
+                node.left = null // auto removes eventsP, events in .left/.right setters
             }
             if (node.right) {
                 removeAll(node.right.value, node, dis)
+                node.right = null
             }
         }
     } else {
@@ -30,6 +32,20 @@ function removeAll(value, node = null, dis) {
             if (found.length === 2) {
                 node = found[0]
                 parent = found[1]
+                console.log('parent,',parent)
+
+                parent.rebuildingChild = true
+
+                if (node.left || node.right) {
+                    if (node.left) {
+                        removeAll(node.left.value, node, dis)
+                        node.left = null // auto removes eventsP, events in .left/.right setters
+                    }
+                    if (node.right) {
+                        removeAll(node.right.value, node, dis)
+                        node.right = null
+                    }
+                }
 
                 for (let prop in parent) {
                     if (parent[prop] === node) {
@@ -37,15 +53,39 @@ function removeAll(value, node = null, dis) {
                     }
                 }
 
-                if (node.left || node.right) {
-                    if (node.left) {
-                        removeAll(node.left.value, node, dis)
+                parent.rebuildingChild = true
+
+                if (!parent.isBalanced()) {
+                    console.log('not balanced this.value:', parent.value)
+                    if (parent.eventsP) {
+                        parent.eventsP.emit('childIsUnbalanced', parent)
+                    } else {
+                        const family = []
+                        const deprecated = []
+
+                        traverse((node) => {
+                            family.push(node.value)
+                            deprecated.push(node)
+                        }, 'inorder', parent)
+
+                        if (deprecated.length > 0) {
+                            deprecated.forEach((node) => {
+                                if (node.left !== null) {
+                                    node.left = null
+                                }
+                                if (node.right !== null) {
+                                    node.right = null
+                                }
+                            })
+                        }
+
+                        if (family.length > 0) {
+                            dis.root = buildB([family])
+                        }
                     }
-                    if (node.right) {
-                        removeAll(node.right.value, node, dis)
-                    }
+                } else {
+                    parent.updateHeight()
                 }
-                node = null
 
             } else {
                 console.log(new Error("Could remove all, find() didn't return two values!"))

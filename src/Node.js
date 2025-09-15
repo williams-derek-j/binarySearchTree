@@ -176,8 +176,47 @@ export default class Node {
         }
 
         this.rebuildingChild = false
-        this.updateHeight()
+        // this.updateHeight()
+
+        if (!this.isBalanced()) {
+            console.log('not balanced this.value:', this.value)
+            if (this.eventsP) {
+                this.eventsP.emit('childIsUnbalanced', this)
+            }
+        } else {
+            this.updateHeight()
+        }
+
         console.log('done rebuilding child, this.value:', this.value)
+    }
+
+    rebuildSelf() {
+        const family = []
+        const deprecated = []
+
+        traverse((node) => {
+            family.push(node.value)
+            deprecated.push(node)
+        }, 'inorder', child)
+
+        deprecated.forEach((node) => {
+            if (node.eventsP) {
+                console.log('clearing eventsP', node)
+                node.eventsP = null
+            }
+            if (node.left !== null) {
+                node._left = null
+            }
+            if (node.right !== null) {
+                node._right = null
+            }
+        })
+
+        console.log('family', family, '\n this: ', this)
+        const rebuilt = buildB([family])
+        console.log('rbh', rebuilt.height, 'rbd', rebuilt.depth, '\n\nrbv', rebuilt.value)
+
+        rebuilt.depth = 0
     }
 
     set left(node) {
@@ -209,6 +248,9 @@ export default class Node {
                         console.log('not balanced this.value:', this.value)
                         if (this.eventsP) {
                             this.eventsP.emit('childIsUnbalanced', this)
+                        } else {
+                            // this.rebuildSelf()
+                            console.log(new Error('No parent to balance child!'))
                         }
                     } else {
                         this.updateHeight(l, r)
@@ -258,6 +300,9 @@ export default class Node {
                         console.log('not balanced this.value:', this.value)
                         if (this.eventsP) {
                             this.eventsP.emit('childIsUnbalanced', this)
+                        } else {
+                            // this.rebuildSelf()
+                            console.log(new Error('No parent to balance child!'))
                         }
                     } else {
                         this.updateHeight(l, r)
@@ -267,8 +312,8 @@ export default class Node {
             this._right = node
         } else {
             if (this.left === null) {
-                this.events.off('childIsUnbalanced')
-                this.events.off('childHeightChange')
+                // this.events.off('childIsUnbalanced')
+                // this.events.off('childHeightChange')
             }
             this._right = null
         }
