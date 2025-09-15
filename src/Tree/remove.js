@@ -100,7 +100,11 @@ export default function remove(value, childrenToo = false, node = null) { // nod
     // console.log('remove', value, childrenToo, node)
 
     if (childrenToo) {
-        removeAll(value, node, this)
+        if (value !== this.root.value) {
+            removeAll(value, node, this)
+        } else {
+            this.root = null
+        }
     } else {
         if (this.root.value === value) { // removing root
             const removed = this.root // root assigned to variable for readability

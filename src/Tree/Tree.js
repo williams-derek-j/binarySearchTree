@@ -57,7 +57,7 @@ export default class Tree {
             // console.log('check unbalanced root')
             if (!('childIsUnbalanced' in this.events.events)) {
                 this.events.on('childIsUnbalanced', (child) => {
-                    console.log('emit p unblaanced', 'child:', child.value, '\nP:', this.value)
+                    // console.log('emit p unblaanced', 'child:', child.value, '\nP:', this.value)
                     this.rebuild(child)
                 })
             }
@@ -71,7 +71,7 @@ export default class Tree {
     }
 
     rebuild(child) {
-        console.log('***************************************tree rebuild()', 'parent/this:', this, '\n root to rebuild:', child.value, child)
+        // console.log('***************************************tree rebuild()', 'parent/this:', this, '\n root to rebuild:', child.value, child)
 
         const family = []
         const deprecated = []
@@ -83,7 +83,7 @@ export default class Tree {
 
         deprecated.forEach((node) => {
             if (node.eventsP) {
-                console.log('clearing eventsP', node)
+                // console.log('clearing eventsP', node)
                 node.eventsP = null
             }
             if (node.left !== null) {
@@ -94,15 +94,15 @@ export default class Tree {
             }
         })
 
-        console.log('family', family, '\n this: ', this)
+        // console.log('family', family, '\n this: ', this)
         const rebuilt = buildB([family])
-        console.log('rbh', rebuilt.height, 'rbd', rebuilt.depth, '\n\nrbv', rebuilt.value)
+        // console.log('rbh', rebuilt.height, 'rbd', rebuilt.depth, '\n\nrbv', rebuilt.value)
 
         this.root = rebuilt
 
         rebuilt.depth = 0
         rebuilt.updateHeight()
 
-        console.log('done rebuilding child, this.value:', this.value)
+        // console.log('done rebuilding child, this.value:', this.value)
     }
 }
